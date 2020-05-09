@@ -53,6 +53,7 @@
     <Compile Include="Interface\IFile.cs" />
     <Compile Include="Interface\ISector.cs" />
     <Compile Include="Kernel\Structure\BootSector.cs" />
+    <Compile Include="Kernel\Structure\FileAllocationTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

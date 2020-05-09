@@ -19,7 +19,7 @@ namespace FileManagementCore.Kernel.Structure
 
         public byte NUM_OF_FAT; // 02
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
         public byte[] NO_USE; // NO use 
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
@@ -69,7 +69,7 @@ namespace FileManagementCore.Kernel.Structure
     }
 
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 486)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 512)]
     struct SBootSector
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
@@ -91,6 +91,16 @@ namespace FileManagementCore.Kernel.Structure
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public byte[] SIGNATURE; //AA 55
     }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 3281*512)]
+    struct SBootSystem
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3281*512)]
+        public byte[] data;
+
+    }
+
+
     public class BootSector
     {
 
@@ -121,43 +131,56 @@ namespace FileManagementCore.Kernel.Structure
             SBootSector sb = new SBootSector();
             sb.jmp = new byte[] { 0x00, 0, 0 };
             sb.OEM_ID = "EMX1.0";
-            
+
             sb.BIOS_PARAM = new SBiosParamBootSector()
             {
                 BYTE_PER_SECTOR = new byte[] { 0x00, 0x02 },
                 SECTORS_PER_CLUSTER = 0x08,
                 REVERSE_SECTORS = new byte[] { 0xD2, 0x0C },
                 NUM_OF_FAT = 0x02,
-                NO_USE = new byte[7],
+                NO_USE = new byte[9],
                 NUMBER_OF_HEAD = new byte[2] { 0xff, 0x00 },
                 HIDDEN_SECTOR = new byte[4] { 0x00, 0x08, 0x00, 0x00 },
-                TOTAL_SECTOR = new byte[4] ,
+                TOTAL_SECTOR = new byte[4],
                 SECTOR_PER_FAT = new byte[4] { 0x97, 0x39, 0x00, 0x00 },
-                VERSION = new byte[4] {0x00,0x12,0x01,0x22 },
-                ROOT_CLUSTER = new byte[4] { 0x02, 0x00 ,0x00,0x00},
+                VERSION = new byte[4] { 0x00, 0x12, 0x01, 0x22 },
+                ROOT_CLUSTER = new byte[4] { 0x02, 0x00, 0x00, 0x00 },
                 SYS_INFO = new byte[2] { 0x01, 0x00 },
-                BACKUP_BOOT_SECTOR = new byte[2] {0x06, 0x00},
+                BACKUP_BOOT_SECTOR = new byte[2] { 0x06, 0x00 },
                 UNUSED_2 = new byte[12]
             };
-            
-                sb.EXTENDED_BIOS_PARAM = new SExtendBiosBootSector() { 
-                VOLUMN_NAME = "OCUNG1"
+
+            sb.EXTENDED_BIOS_PARAM = new SExtendBiosBootSector()
+            {
+                PHYSIC_DRIVE = 128,
+                REVERSE = 0,
+                SIGNATURE = 0x29,
+                SERIAL_NUM = new byte[4] { 0x23, 0x24, 0x25, 0x26 },
+                VOLUMN_NAME = "OCUN0G1",
+                FILE_SYSTEM = "EMXFAT"
             };
-            
-            sb.BOOTSTRAP_CODE = new byte[420] ;
+
+
+            sb.BOOTSTRAP_CODE = new byte[420];
             sb.SIGNATURE = new byte[2] { 0x55, 0xAA };
             //short num = BitConverter.ToInt16(sb.BIOS_PARAM.BYTE_PER_SECTOR, 0);
+            SBootSystem bootSystem = new SBootSystem();
+            SFileAllocationTable fat1 = new SFileAllocationTable();
             using (FileStream fileStream = new FileStream(@"test.dat", FileMode.OpenOrCreate))
             {
                 Write(fileStream, sb);
-                fileStream.Seek(0, SeekOrigin.Begin);
-                SBootSector test2 = (SBootSector)Read(fileStream, typeof(SBootSector));
+                Write(fileStream, bootSystem);
+                Write(fileStream, fat1);
+                Write(fileStream, fat1);
+                //fileStream.Seek(0, SeekOrigin.Begin);
+                
+                // SBootSector test2 = (SBootSector)Read(fileStream, typeof(SBootSector));
 
-                Console.WriteLine("Name: {0}", test2.EXTENDED_BIOS_PARAM.VOLUMN_NAME);
+                //Console.WriteLine("Name: {0}", test2.EXTENDED_BIOS_PARAM.VOLUMN_NAME);
 
             }
 
-           // Console.WriteLine(num); 
+            // Console.WriteLine(num); 
         }
     }
 

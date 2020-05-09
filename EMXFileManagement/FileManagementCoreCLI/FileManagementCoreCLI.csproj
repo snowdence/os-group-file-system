@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="bookmark.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FileManagementCore\FileManagementCore.csproj">
