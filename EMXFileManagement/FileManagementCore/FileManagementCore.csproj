@@ -41,6 +41,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,16 +50,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interface\ICluster.cs" />
-    <Compile Include="Interface\IFile.cs" />
-    <Compile Include="Interface\ISector.cs" />
+    <Compile Include="Helper\DateTimeHelper.cs" />
+    <Compile Include="Helper\FileIOHelper.cs" />
+    <Compile Include="Kernel\Enum.cs" />
     <Compile Include="Kernel\Structure\BootSector.cs" />
+    <Compile Include="Kernel\Structure\Cluster.cs" />
+    <Compile Include="Kernel\Structure\DataComponent.cs" />
     <Compile Include="Kernel\Structure\FileAllocationTable.cs" />
+    <Compile Include="Kernel\Structure\FileModel.cs" />
+    <Compile Include="Kernel\Structure\FolderModel.cs" />
+    <Compile Include="Kernel\Structure\RDET.cs" />
+    <Compile Include="Kernel\Utility\DiskManagement.cs" />
+    <Compile Include="Kernel\Utility\FileManagement.cs" />
+    <Compile Include="Kernel\Utility\FolderManagement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controller\" />
-    <Folder Include="Helper\" />
+    <Folder Include="Interface\" />
     <Folder Include="Lib\" />
   </ItemGroup>
   <ItemGroup>

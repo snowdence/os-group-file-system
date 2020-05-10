@@ -7,7 +7,7 @@ namespace FileManagementCore.Kernel.Structure
 {
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 53)]
-    struct SBiosParamBootSector
+    public struct SBiosParamBootSector
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public byte[] BYTE_PER_SECTOR; // 02 00
@@ -52,7 +52,7 @@ namespace FileManagementCore.Kernel.Structure
         public byte[] UNUSED_2; //00 06 => SECTOR 6
     }
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 26)]
-    struct SExtendBiosBootSector
+    public struct SExtendBiosBootSector
     {
         public byte PHYSIC_DRIVE; //80 => 128
         public byte REVERSE; //00
@@ -70,7 +70,7 @@ namespace FileManagementCore.Kernel.Structure
 
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 512)]
-    struct SBootSector
+    public struct SBootSector
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
         public byte[] jmp;

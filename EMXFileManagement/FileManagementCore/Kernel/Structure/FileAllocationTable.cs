@@ -19,11 +19,36 @@ namespace FileManagementCore.Kernel.Structure
     public class FileAllocationTable
     {
         SFileAllocationTable _fat;
+        Queue<int> _clus_available = new Queue<int>();
         public FileAllocationTable(SFileAllocationTable fat)
         {
             this._fat = fat;
+            for (int i =0; i < 1887104; i++)
+            {
+                if(this._fat.FAT_ENTRY[i] == 0)
+                    _clus_available.Enqueue(i);
+            }
+        }
+        public List<int> GetListNextClusterEmpty(int size)
+        {
+            List<int> cluster_empty = new List<int>();
+            for  ( int i = 0;  i < size; i++)
+            {
+                cluster_empty.Add(this.GetNextClusterEmpty());
+            }
+            return cluster_empty;
         }
 
+
+        public int CountClusterEmpty()
+        {
+            return _clus_available.Count;
+        }
+
+        public int GetNextClusterEmpty()
+        {
+            return _clus_available.Dequeue();
+        }
         byte[] getBytes(SFileAllocationTable str)
         {
             int size = Marshal.SizeOf(str);
@@ -36,7 +61,8 @@ namespace FileManagementCore.Kernel.Structure
             return arr;
         }
         //test this function
-        int ReadFatEntry(int n)
+        /*
+        public int ReadFatEntry(int n)
         {
             int size = Marshal.SizeOf(this._fat);
 
@@ -47,12 +73,22 @@ namespace FileManagementCore.Kernel.Structure
             Marshal.Copy(ptr + n * 4, arr,0  , 4);
             Marshal.FreeHGlobal(ptr);
             return BitConverter.ToInt32(arr, 0); 
+        }*/
+        
+        public uint ReadFatEntry(int n)
+        { 
+            return this._fat.FAT_ENTRY[n];
         }
-        int SetFatEntry(byte[] arr, int n)
+
+
+        public int SetFatEntry(UInt32 value_cluster, int n)
         {
-            Array.Copy(arr, 0, this._fat.FAT_ENTRY, n * 4, 4);
+            this._fat.FAT_ENTRY[n] = value_cluster; 
+            //Array.Copy(arr, 0, this._fat.FAT_ENTRY, n , 4);
+            //Array.Copy(arr, 0, this._fat.FAT_ENTRY[n], n *4, 4);
             return 0;
         }
+
         
     }
 }
