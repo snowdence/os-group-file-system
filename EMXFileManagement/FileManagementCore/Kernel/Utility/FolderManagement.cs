@@ -64,7 +64,7 @@ namespace FileManagementCore.Kernel.Utility
             List<DataComponent> data = new List<DataComponent>();
             int folder_rdet_cluster = folder.dir_cluster;
             SRDET rdet_cache = _disk.ReadRDETCache(folder_rdet_cluster);
-            for (int i = 0; i < rdet_cache.entries.Count(); i++)
+            for (int i = 1; i < rdet_cache.entries.Count(); i++)
             {
                 SRDETEntry _e = rdet_cache.entries[i];
                 if (_e.FLAG == 0x00)

@@ -49,6 +49,7 @@ namespace FileManagementCore.Kernel.Structure
 
         public List<DataComponent> GetAllInside()
         {
+            _list_component.Clear(); 
             int folder_rdet_cluster = this.dir_cluster;
             SRDET rdet_cache = _core_disk.ReadRDETCache(folder_rdet_cluster);
             for (int i = 1; i < rdet_cache.entries.Count(); i++)

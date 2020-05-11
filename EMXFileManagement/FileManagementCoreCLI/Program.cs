@@ -93,15 +93,17 @@ namespace FileManagementCoreCLI
             //0x46
             List<byte> data = Enumerable.Repeat((byte)0x42, 999).ToList();
             file._data = data;
-
+            
 
             FileManagement fileManagement = new FileManagement(disk);
             fileManagement.AddNewFile(con, file);
             folderManagement.CreateFolder(con, "dirindir", "pass");
-            file.FileName = "hihi";
-            fileManagement.AddNewFile(con, file);
 
             List<DataComponent> _con_detail = folderManagement.GetAllInsideFolder(con);
+            file.FileName = "hihi";
+            fileManagement.AddNewFile((FolderModel)_con_detail[1], file);
+            var sd = folderManagement.GetAllInsideFolder((FolderModel)_con_detail[1]);
+
 
 
         }
@@ -143,7 +145,7 @@ namespace FileManagementCoreCLI
         }
         static void Main(string[] args)
         {
-           // test_add_folder_and_file();
+            //test_add_folder_and_file();
             test_print_delete_file();
 
             Console.Read();

@@ -35,14 +35,30 @@ namespace FileManagementCore.Kernel.Structure
         }
         public virtual TreeNode GetTreeNode()
         {
-            _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt } - {this.First_cluster} - { (this is FileModel ? "file" : "folder") }" );
+            if (_name == "")
+            {
+                _tree_node = new TreeNode("ROOT");
+            }
+            else{
+                if(this is FolderModel)
+                {
+                    _tree_node = new TreeNode($"{ this.FileName }");
+                }
+                else
+                {
+                    _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt}");
+
+                }
+            }
+            // _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt } - {this.First_cluster} - { (this is FileModel ? "file" : "folder") }" );
+            _tree_node.Tag = $"{FileName}.{FileExt}";
             foreach(DataComponent dataComponent in _list_component)
             {
                 _tree_node.Nodes.Add(dataComponent.GetTreeNode());
             }
             return _tree_node;
         }
-
+      
         public virtual void PrintPretty(string indent, bool last)
         {
             Console.Write(indent);
@@ -128,6 +144,7 @@ namespace FileManagementCore.Kernel.Structure
         //public string Data { get => _data; set => _data = value; }
 
         public byte Flag { get => _flag; set => _flag = value; }
+        public int FileSize { get => _file_size; set => _file_size = value; }
         public string FileName { get => _name; set => _name = value; }
         public string FileExt { get => _ext; set => _ext = value; }
         public byte Attribute { get => _attribute; set => _attribute = value; }
@@ -210,6 +227,31 @@ namespace FileManagementCore.Kernel.Structure
             this.Reversed = 0x00;
             SRDETEntry entry = this.GetEntry();
             disk.UpdateEntry(entry, parent_cluster);
+        }
+        
+        public virtual DataComponent SearchComponent(string str)
+        {
+            for(int i =0; i < _list_component.Count; i++)
+            {
+                if(_list_component[i].ToString() == str)
+                {
+                    return _list_component[i];
+                }
+            }
+            return null;
+        }
+
+        public override string ToString()
+        {
+            if (this is FolderModel)
+            {
+                return $"{ this.FileName }";
+            }
+            else
+            {
+                return $"{ this.FileName }.{ this.FileExt}";
+
+            }
         }
     }
 }

@@ -53,6 +53,7 @@ namespace FileManagementCore.Kernel.Utility
             List<int> list_wrote = _disk.WriteBlockData(file._data.ToArray(), file_size);
             SRDETEntry entry = file.GetEntry();
             entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]);
+            
             _disk.WriteNewEntry(entry, parent.dir_cluster);//root cluster is 3  
         }
         public void DeleteFile(FileModel file)
