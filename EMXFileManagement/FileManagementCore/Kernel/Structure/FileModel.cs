@@ -22,10 +22,14 @@ namespace FileManagementCore.Kernel.Structure
         {
             
         }
-
-        public FileModel(SRDETEntry entry) :base (entry) 
+        public FileModel(int parent_clus)
         {
-          
+            this.parent_cluster = parent_clus;
+        }
+
+        public FileModel(SRDETEntry entry, int parent_clus) :base (entry) 
+        {
+            this.parent_cluster = parent_clus;
 
         }
         public override int DataSize()

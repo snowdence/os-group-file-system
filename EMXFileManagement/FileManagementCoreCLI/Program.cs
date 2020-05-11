@@ -11,7 +11,7 @@ using FileManagementCore.Helper;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms.VisualStyles;
 using FileManagementCore.Kernel.Utility;
-
+using System.Runtime.CompilerServices;
 
 namespace FileManagementCoreCLI
 {
@@ -83,7 +83,7 @@ namespace FileManagementCoreCLI
             FileModel file = new FileModel()
             {
                 FileName = "Ten",
-                FileExt = ".pdf",
+                FileExt = "pdf",
                 Created_datetime = DateTime.Now,
                 Last_access_date = DateTime.Now,
                 Modified_date = DateTime.Now,
@@ -97,10 +97,15 @@ namespace FileManagementCoreCLI
 
             FileManagement fileManagement = new FileManagement(disk);
             fileManagement.AddNewFile(con, file);
+            folderManagement.CreateFolder(con, "dirindir", "pass");
+            file.FileName = "hihi";
+            fileManagement.AddNewFile(con, file);
+
             List<DataComponent> _con_detail = folderManagement.GetAllInsideFolder(con);
 
+
         }
-        static void test_print()
+        static void test_print_delete_file()
         {
 
             DiskManagement disk = new DiskManagement();
@@ -113,13 +118,33 @@ namespace FileManagementCoreCLI
             root._core_disk = disk;
             //var objk = root.GetAllInside();
             //objk = ((FolderModel)objk[2]).GetAllInside();
-            root.GetAllInside();
+            List<DataComponent> dataComponents  =  root.GetAllInside();
             root.PrintPretty(" ", true);
+            Console.WriteLine(" \n\n\n");
+
+            dataComponents[2].Remove(disk);
+            root.PrintPretty(" ", true);
+            Console.WriteLine(" \n\n\n");
+            //dataComponents[2].Remove(disk);
+
+            /*
+            fileManagement.DeleteFile((FileModel)dataComponents[0]);
+            dataComponents = root.GetAllInside();
+            root.PrintPretty(" ", true);
+            Console.WriteLine(" \n\n\n");
+
+            fileManagement.RecoverFile((FileModel)dataComponents[0]);
+            dataComponents = root.GetAllInside();
+            root.PrintPretty(" ", true);
+            Console.WriteLine(" \n\n\n");
+            */
+
+
         }
         static void Main(string[] args)
         {
-            //test_add_folder_and_file();
-            test_print();
+           // test_add_folder_and_file();
+            test_print_delete_file();
 
             Console.Read();
         }

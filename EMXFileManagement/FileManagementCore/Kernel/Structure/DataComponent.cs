@@ -12,6 +12,8 @@ namespace FileManagementCore.Kernel.Structure
 {
     public class DataComponent
     {
+        public int parent_cluster = 2; //to direct to table  default is root
+
         protected byte _flag = 0x02; //0x02 is file
         protected string _name = "";
         protected string _ext = "";
@@ -46,12 +48,11 @@ namespace FileManagementCore.Kernel.Structure
             }
             if (this is FolderModel)
             {
-                Console.WriteLine("[F] : " + this.FileName );
-
+                Console.WriteLine($"{this.FileName}  - [FCluster] {this.First_cluster} - Parent {this.parent_cluster} - Deleted: {this.IsDeleted}");
             }
             else
             {
-                Console.WriteLine(this.FileName + "." + this._ext);
+                Console.WriteLine($"{this.FileName}.{this._ext} - Cluster {this.First_cluster} - Parent {this.parent_cluster} - Size: {this._file_size}  - Deleted: {this.IsDeleted}");
 
             }
             for (int i = 0; i < _list_component.Count; i++)
@@ -121,7 +122,7 @@ namespace FileManagementCore.Kernel.Structure
         public string FileExt { get => _ext; set => _ext = value; }
         public byte Attribute { get => _attribute; set => _attribute = value; }
 
-        //public byte Reversed { get => _reversed; set => _reversed = value; }
+        public byte Reversed { get => _reversed; set => _reversed = value; }
         //public byte Dms_time { get => _dms_time; set => _dms_time = value; }
         public DateTime Created_datetime { get => _created_datetime; set => _created_datetime = value; }
         public DateTime Last_access_date { get => _last_access_date; set => _last_access_date = value; }
@@ -131,16 +132,16 @@ namespace FileManagementCore.Kernel.Structure
 
         public bool IsDeleted
         {
-            get => (this._flag == 0xE5);
+            get => (this._reversed == 0xE5);
             set
             {
                 if (value)
                 {
-                    _flag = 0xE5;
+                    _reversed = 0xE5;
                 }
                 else
                 {
-                    _flag = 0x02;//file
+                    _reversed = 0x00;//file
                 }
             }
         }
@@ -172,6 +173,33 @@ namespace FileManagementCore.Kernel.Structure
             return Password.Length > 0;
         }
 
+        public virtual void Remove(DiskManagement disk)
+        {
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
 
+            this.Reversed = 0xE5;
+            SRDETEntry entry = this.GetEntry();
+            disk.UpdateEntry(entry, parent_cluster);
+        }
+
+
+        public virtual void Recover(DiskManagement disk)
+        {
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
+
+            this.Reversed = 0x00;
+            SRDETEntry entry = this.GetEntry();
+            disk.UpdateEntry(entry, parent_cluster);
+        }
     }
 }

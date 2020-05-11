@@ -14,21 +14,24 @@ namespace FileManagementCore.Kernel.Structure
         bool recursive = false; 
      
         public DiskManagement _core_disk;
-        public FolderModel(SRDETEntry entry) : base(entry)
+        public FolderModel(SRDETEntry entry, int parent_clus) : base(entry)
         {
+            this.parent_cluster = parent_clus; 
             dir_cluster = BitConverter.ToInt32(entry.FIRST_CLUSTER_LOW_WORD, 0);
         }
-        public FolderModel(DiskManagement disk, SRDETEntry entry, bool recursive_query) : base(entry)
+        public FolderModel(DiskManagement disk, int parent_clus, SRDETEntry entry, bool recursive_query) : base(entry)
         {
             this._core_disk = disk;
-           
+            this.parent_cluster = parent_clus;
+
             dir_cluster = BitConverter.ToInt32(entry.FIRST_CLUSTER_LOW_WORD, 0);
             if (recursive_query) { 
                 this.GetAllInside();
             }
         }
-        public FolderModel(DiskManagement disk,  bool recursive_query) : base()
+        public FolderModel(DiskManagement disk, int parent_clus,  bool recursive_query) : base()
         {
+            this.parent_cluster = parent_clus;
 
             this._core_disk = disk;
             
@@ -44,8 +47,6 @@ namespace FileManagementCore.Kernel.Structure
         }
    
 
-
-
         public List<DataComponent> GetAllInside()
         {
             int folder_rdet_cluster = this.dir_cluster;
@@ -60,16 +61,18 @@ namespace FileManagementCore.Kernel.Structure
                 if (_e.FLAG == 0x02)
                 {
                     //file
-                    _list_component.Add(new FileModel( _e));
+                    _list_component.Add(new FileModel( _e, this.dir_cluster));
                 }
                 else if (_e.FLAG == 0x03)
                 {
-                    _list_component.Add(new FolderModel(_core_disk,  _e, true));
+                    _list_component.Add(new FolderModel(_core_disk,  this.dir_cluster,  _e, true));
                 }
             }
             return _list_component;
         }
-      
+   
+
+
 
         public override int DataSize()
         {
@@ -84,6 +87,24 @@ namespace FileManagementCore.Kernel.Structure
         public override SRDETEntry GetEntry()
         {
             return base.GetEntry();
+        }
+        public override void Remove(DiskManagement disk)
+        {
+            foreach(DataComponent dataComponent in _list_component)
+            { 
+                dataComponent.Remove(disk);
+            }
+            base.Remove(disk);
+
+        }
+        public override void Recover(DiskManagement disk)
+        {
+            foreach (DataComponent dataComponent in _list_component)
+            {
+                dataComponent.Recover(disk);
+            }
+            base.Recover(disk);
+
         }
     }
 }

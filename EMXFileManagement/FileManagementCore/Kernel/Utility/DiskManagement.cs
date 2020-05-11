@@ -168,8 +168,24 @@ namespace FileManagementCore.Kernel.Utility
             return GetSectorOffsetFromCluster(cluster_n) * 512L;
         }
         #endregion
-       
         
+        
+        public void UpdateEntry(SRDETEntry entry,int cluster= 2)
+        {
+            this.ReadRDETCache(cluster);
+            for(int i = 0; i < _rdet_cache.entries.Count(); i++)
+            {
+                if (_rdet_cache.entries[i].FILE_NAME == entry.FILE_NAME && _rdet_cache.entries[i].FILE_EXT == entry.FILE_EXT)
+                {
+                    _rdet_cache.entries[i] = entry;
+                }
+
+            }
+            
+         
+            _file_stream.Seek(CalcMoveOffsetClusterPointerStream(cluster), SeekOrigin.Begin);
+            FileIOHelper.Write(_file_stream, _rdet_cache);
+        }
         public void WriteNewEntry(SRDETEntry entry, int cluster= 2)
         {
             this.ReadRDETCache(cluster);

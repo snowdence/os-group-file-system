@@ -59,7 +59,7 @@ namespace FileManagementCore.Kernel.Utility
 
 
         }
-        public List<DataComponent>  GetAllInsideFolder(FolderModel folder)
+        public List<DataComponent> GetAllInsideFolder(FolderModel folder)
         {
             List<DataComponent> data = new List<DataComponent>();
             int folder_rdet_cluster = folder.dir_cluster;
@@ -74,16 +74,18 @@ namespace FileManagementCore.Kernel.Utility
                 if (_e.FLAG == 0x02)
                 {
                     //file
-                    data.Add(new FileModel(_e));
+                    data.Add(new FileModel(_e, folder.dir_cluster));
                 }
                 else if (_e.FLAG == 0x03)
                 {
-                    data.Add(new FolderModel(_e));
+                    data.Add(new FolderModel(_e, folder.dir_cluster));
                 }
             }
             return data;
         }
-
         
+
+
+
     }
 }
