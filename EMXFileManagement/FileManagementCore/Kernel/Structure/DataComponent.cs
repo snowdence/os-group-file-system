@@ -28,9 +28,19 @@ namespace FileManagementCore.Kernel.Structure
         protected int _file_size = 0;
         SRDETEntry _entry;
         protected List<DataComponent> _list_component = new List<DataComponent>();
+        TreeNode _tree_node;
         public DataComponent()
         {
 
+        }
+        public virtual TreeNode GetTreeNode()
+        {
+            _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt } - {this.First_cluster} - { (this is FileModel ? "file" : "folder") }" );
+            foreach(DataComponent dataComponent in _list_component)
+            {
+                _tree_node.Nodes.Add(dataComponent.GetTreeNode());
+            }
+            return _tree_node;
         }
 
         public virtual void PrintPretty(string indent, bool last)
