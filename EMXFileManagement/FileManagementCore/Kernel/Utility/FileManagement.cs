@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FileManagementCore.Kernel.Utility
 {
@@ -123,9 +124,7 @@ namespace FileManagementCore.Kernel.Utility
             cluster_sdet.entries[0] = folderModel.GetEntry();
             //_disk.WriteBlockData(getBytes(folderModel.GetEntry()), 4096, current_dir_cluster_rdet);
             _disk.WriteSDETCluster(cluster_sdet, current_dir_cluster_rdet);
-            _disk.WriteNewEntry(folderModel.GetEntry(), dir_cluster_rdet);//root cluster is 3  
-
-
+            _disk.WriteNewEntry(folderModel.GetEntry(), dir_cluster_rdet);//root cluster is 3
         }
         public List<DataComponent> GetAllInsideFolder(FolderModel folder)
         {
@@ -156,6 +155,36 @@ namespace FileManagementCore.Kernel.Utility
             int parent_cluster = folder.parent_cluster;
             int dir_cluster_sdet = folder.dir_cluster;
            
+        }
+        public void ExportFile(FileModel file)
+        {
+          
+            //rdet
+            //sdet (thu muc con)
+            int first_cluster = file.First_cluster;
+            // first cluster 
+            // FF FF FF 0F : 268435455
+            //268435455
+
+            uint eof = BitConverter.ToUInt32(new byte[] { 0xFF, 0xFF, 0xFF, 0x0F }, 0); 
+            uint value_on_cluster_4 = _disk.ReadFatEntry(first_cluster);
+            uint value_on_cluster_5 = _disk.ReadFatEntry((int)value_on_cluster_4);
+            uint value_on_cluster_6 = _disk.ReadFatEntry((int)value_on_cluster_5);
+
+            SCluster cluster4 = _disk.ReadBlockData(4);
+            SCluster cluster5 = _disk.ReadBlockData(5);
+            SCluster cluster6 = _disk.ReadBlockData(6);
+
+            List<byte> list_add = cluster4.data.ToList();
+             list_add.AddRange(cluster5.data.ToList());
+            list_add.AddRange(cluster6.data.ToList());
+            MessageBox.Show(list_add.Count.ToString());
+            
+            // 4 5 6 
+
+            //byte[] file_data
+            //File.WriteAllBytes(path, file_data);
+
         }
     }
 }

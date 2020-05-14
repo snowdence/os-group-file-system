@@ -167,6 +167,7 @@ namespace FileManagementCore.Kernel.Utility
         {
             return GetSectorOffsetFromCluster(cluster_n) * 512L;
         }
+        
         #endregion
         
         
@@ -217,6 +218,11 @@ namespace FileManagementCore.Kernel.Utility
             _fileAllocationTable = new FileAllocationTable(_fat_cache);
             
         }
+        public uint ReadFatEntry(int n)
+        {
+            this.ReadFatCache();// refresh fat
+            return _fat_cache.FAT_ENTRY[n];
+        }
 
         public int GetNextClusterEmpty()
         {
@@ -256,9 +262,17 @@ namespace FileManagementCore.Kernel.Utility
             FileIOHelper.Write(_file_stream, cluster);
         }
         
+        public SCluster ReadBlockData(int n) {
+            SCluster cluster = new SCluster();
+            _file_stream.Seek(CalcMoveOffsetClusterPointerStream(n), SeekOrigin.Begin);
+
+            cluster = (SCluster) FileIOHelper.Read(_file_stream, typeof(SCluster));
+            return cluster;
+        }
         
         public List<int> WriteBlockData(byte[] buffer, int length)
         {
+            //length 8888  
             int remain_read = length;
             byte[] block_fixed = new byte[4096];
             int byte_read_epoch = 4096;
@@ -270,7 +284,8 @@ namespace FileManagementCore.Kernel.Utility
             {
                 num_need_cluster += 1;
             }
-            List<int> list_cluster_need = _fileAllocationTable.GetListNextClusterEmpty(num_need_cluster);
+            //8888 ~ 2 cluster 
+            List<int> list_cluster_need = _fileAllocationTable.GetListNextClusterEmpty(num_need_cluster); // lay n cluster
 
             while (remain_read > 0)
             {
@@ -293,6 +308,7 @@ namespace FileManagementCore.Kernel.Utility
             return list_cluster_need;
         }
 
+        
 
         //RDET import
         public void ImportFile()

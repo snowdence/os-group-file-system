@@ -62,7 +62,6 @@
     <Compile Include="Kernel\Structure\RDET.cs" />
     <Compile Include="Kernel\Utility\DiskManagement.cs" />
     <Compile Include="Kernel\Utility\FileManagement.cs" />
-    <Compile Include="Kernel\Utility\FolderManagement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
