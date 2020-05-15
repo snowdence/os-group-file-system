@@ -47,7 +47,7 @@ namespace FileManagementCore.Kernel.Structure
         }
    
 
-        public List<DataComponent> GetAllInside()
+        public List<DataComponent> GetAllInside(bool recursive= true)
         {
             _list_component.Clear(); 
             int folder_rdet_cluster = this.dir_cluster;
@@ -66,7 +66,7 @@ namespace FileManagementCore.Kernel.Structure
                 }
                 else if (_e.FLAG == 0x03)
                 {
-                    _list_component.Add(new FolderModel(_core_disk,  this.dir_cluster,  _e, true));
+                    _list_component.Add(new FolderModel(_core_disk,  this.dir_cluster,  _e, recursive));
                 }
             }
             return _list_component;

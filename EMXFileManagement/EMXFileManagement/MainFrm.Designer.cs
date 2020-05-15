@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -36,17 +38,31 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createVolumnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSampleFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.xoáToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.xuấtFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.đặtPasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.phụcHồiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rtbLog = new System.Windows.Forms.RichTextBox();
+            this.checkFlagDeletedShow = new System.Windows.Forms.CheckBox();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.menuStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
             // 
+            this.treeView1.ImageIndex = 0;
+            this.treeView1.ImageList = this.imageList1;
             this.treeView1.Location = new System.Drawing.Point(0, 73);
             this.treeView1.Name = "treeView1";
+            this.treeView1.SelectedImageIndex = 0;
             this.treeView1.Size = new System.Drawing.Size(380, 510);
             this.treeView1.TabIndex = 0;
             // 
@@ -61,7 +77,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(377, 73);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(922, 510);
+            this.listView1.Size = new System.Drawing.Size(497, 510);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -97,22 +113,39 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openDiskToolStripMenuItem,
             this.createVolumnToolStripMenuItem,
+            this.addSampleFileToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // openDiskToolStripMenuItem
+            // 
+            this.openDiskToolStripMenuItem.Name = "openDiskToolStripMenuItem";
+            this.openDiskToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.openDiskToolStripMenuItem.Text = "Open disk";
+            this.openDiskToolStripMenuItem.Click += new System.EventHandler(this.openDiskToolStripMenuItem_Click);
+            // 
             // createVolumnToolStripMenuItem
             // 
             this.createVolumnToolStripMenuItem.Name = "createVolumnToolStripMenuItem";
-            this.createVolumnToolStripMenuItem.Size = new System.Drawing.Size(189, 26);
+            this.createVolumnToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.createVolumnToolStripMenuItem.Text = "Create Volumn";
+            this.createVolumnToolStripMenuItem.Click += new System.EventHandler(this.createVolumnToolStripMenuItem_Click);
+            // 
+            // addSampleFileToolStripMenuItem
+            // 
+            this.addSampleFileToolStripMenuItem.Name = "addSampleFileToolStripMenuItem";
+            this.addSampleFileToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addSampleFileToolStripMenuItem.Text = "Add Sample File";
+            this.addSampleFileToolStripMenuItem.Click += new System.EventHandler(this.addSampleFileToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(189, 26);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // helpToolStripMenuItem
@@ -130,11 +163,80 @@
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.xoáToolStripMenuItem,
+            this.xuấtFileToolStripMenuItem,
+            this.đặtPasswordToolStripMenuItem,
+            this.phụcHồiToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(168, 100);
+            // 
+            // xoáToolStripMenuItem
+            // 
+            this.xoáToolStripMenuItem.Name = "xoáToolStripMenuItem";
+            this.xoáToolStripMenuItem.Size = new System.Drawing.Size(167, 24);
+            this.xoáToolStripMenuItem.Text = "Xoá";
+            this.xoáToolStripMenuItem.Click += new System.EventHandler(this.xoáToolStripMenuItem_Click);
+            // 
+            // xuấtFileToolStripMenuItem
+            // 
+            this.xuấtFileToolStripMenuItem.Name = "xuấtFileToolStripMenuItem";
+            this.xuấtFileToolStripMenuItem.Size = new System.Drawing.Size(167, 24);
+            this.xuấtFileToolStripMenuItem.Text = "Xuất File";
+            this.xuấtFileToolStripMenuItem.Click += new System.EventHandler(this.xuấtFileToolStripMenuItem_Click);
+            // 
+            // đặtPasswordToolStripMenuItem
+            // 
+            this.đặtPasswordToolStripMenuItem.Name = "đặtPasswordToolStripMenuItem";
+            this.đặtPasswordToolStripMenuItem.Size = new System.Drawing.Size(167, 24);
+            this.đặtPasswordToolStripMenuItem.Text = "Đặt Password";
+            this.đặtPasswordToolStripMenuItem.Click += new System.EventHandler(this.đặtPasswordToolStripMenuItem_Click);
+            // 
+            // phụcHồiToolStripMenuItem
+            // 
+            this.phụcHồiToolStripMenuItem.Name = "phụcHồiToolStripMenuItem";
+            this.phụcHồiToolStripMenuItem.Size = new System.Drawing.Size(167, 24);
+            this.phụcHồiToolStripMenuItem.Text = "Phục hồi";
+            this.phụcHồiToolStripMenuItem.Click += new System.EventHandler(this.phụcHồiToolStripMenuItem_Click);
+            // 
+            // rtbLog
+            // 
+            this.rtbLog.Location = new System.Drawing.Point(910, 73);
+            this.rtbLog.Name = "rtbLog";
+            this.rtbLog.Size = new System.Drawing.Size(378, 500);
+            this.rtbLog.TabIndex = 3;
+            this.rtbLog.Text = "";
+            // 
+            // checkFlagDeletedShow
+            // 
+            this.checkFlagDeletedShow.AutoSize = true;
+            this.checkFlagDeletedShow.Checked = true;
+            this.checkFlagDeletedShow.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkFlagDeletedShow.Location = new System.Drawing.Point(910, 46);
+            this.checkFlagDeletedShow.Name = "checkFlagDeletedShow";
+            this.checkFlagDeletedShow.Size = new System.Drawing.Size(109, 21);
+            this.checkFlagDeletedShow.TabIndex = 4;
+            this.checkFlagDeletedShow.Text = "Hiện đã xoá ";
+            this.checkFlagDeletedShow.UseVisualStyleBackColor = true;
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "Dtafalonso-Yosemite-Flat-Folder.ico");
+            this.imageList1.Images.SetKeyName(1, "Firstfear-Whistlepuff-Documents.ico");
+            this.imageList1.Images.SetKeyName(2, "Saki-NuoveXT-2-Folder-document-open.ico");
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1300, 585);
+            this.Controls.Add(this.checkFlagDeletedShow);
+            this.Controls.Add(this.rtbLog);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.menuStrip1);
@@ -143,6 +245,7 @@
             this.Text = "Form1";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -162,6 +265,16 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem xoáToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem xuấtFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem đặtPasswordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem phụcHồiToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addSampleFileToolStripMenuItem;
+        private System.Windows.Forms.RichTextBox rtbLog;
+        private System.Windows.Forms.ToolStripMenuItem openDiskToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkFlagDeletedShow;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }
 
