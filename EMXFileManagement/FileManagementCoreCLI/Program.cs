@@ -68,15 +68,15 @@ namespace FileManagementCoreCLI
             test_createfile(disk, "file1", "txt", "", 4096, 0x42);
             test_createfile(disk, "file2", "exe", "bimat", 8888, 0x43);
 
-            FolderManagement folderManagement = new FolderManagement(disk);
             FolderModel folder = new FolderModel()
             {
                 dir_cluster = 2
             };
 
+            FileManagement fileManagement = new FileManagement(disk);
 
-            folderManagement.CreateFolder(folder, "thumuccon", "");
-            List<DataComponent> obj = folderManagement.GetAllInsideFolder(folder);
+            fileManagement.CreateFolder(folder, "thumuccon", "");
+            List<DataComponent> obj = fileManagement.GetAllInsideFolder(folder);
             FolderModel con = (FolderModel)obj[2];
 
 
@@ -94,15 +94,14 @@ namespace FileManagementCoreCLI
             List<byte> data = Enumerable.Repeat((byte)0x42, 999).ToList();
             file._data = data;
             
-
-            FileManagement fileManagement = new FileManagement(disk);
+            //size
             fileManagement.AddNewFile(con, file);
-            folderManagement.CreateFolder(con, "dirindir", "pass");
+            fileManagement.CreateFolder(con, "dirindir", "pass");
 
-            List<DataComponent> _con_detail = folderManagement.GetAllInsideFolder(con);
+            List<DataComponent> _con_detail = fileManagement.GetAllInsideFolder(con);
             file.FileName = "hihi";
             fileManagement.AddNewFile((FolderModel)_con_detail[1], file);
-            var sd = folderManagement.GetAllInsideFolder((FolderModel)_con_detail[1]);
+            var sd = fileManagement.GetAllInsideFolder((FolderModel)_con_detail[1]);
 
 
 
@@ -113,7 +112,6 @@ namespace FileManagementCoreCLI
             DiskManagement disk = new DiskManagement();
             disk.ReadFatCache();
 
-            FolderManagement folderManagement = new FolderManagement(disk);
             FileManagement fileManagement = new FileManagement(disk);
 
             FolderModel root = new FolderModel();
@@ -121,16 +119,28 @@ namespace FileManagementCoreCLI
             //var objk = root.GetAllInside();
             //objk = ((FolderModel)objk[2]).GetAllInside();
             List<DataComponent> dataComponents  =  root.GetAllInside();
+
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
 
-            dataComponents[2].Remove(disk);
+            //dataComponents[2].Remove(disk);
+            
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
+
+            FolderModel thumuccon = (FolderModel)dataComponents[2];
+            List<DataComponent> trong_thu_muc_con = thumuccon.GetAllInside();
+
+            FileModel tep_pdf = (FileModel)dataComponents[1];
+
+            fileManagement.ExportFile(tep_pdf);
+
+            Console.WriteLine(" \n\n\n");
+
             //dataComponents[2].Remove(disk);
 
             /*
-            fileManagement.DeleteFile((FileModel)dataComponents[0]);
+            fileManagement.DeleteFile((FileModel)dataComponents[0]~)~;
             dataComponents = root.GetAllInside();
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
@@ -145,7 +155,7 @@ namespace FileManagementCoreCLI
         }
         static void Main(string[] args)
         {
-            //test_add_folder_and_file();
+            // test_add_folder_and_file();
             test_print_delete_file();
 
             Console.Read();

@@ -16,7 +16,7 @@ namespace EMXFileManagement
     public partial class MainFrm : Form
     {
         DiskManagement disk;
-        FolderManagement folderManagement;
+        
         FileManagement fileManagement;
         FolderModel root;
         public MainFrm()
@@ -25,17 +25,12 @@ namespace EMXFileManagement
            
             disk = new DiskManagement();
             disk.ReadFatCache();
-            folderManagement = new FolderManagement(disk);
             fileManagement = new FileManagement(disk);
 
             root = new FolderModel();
            
             root._core_disk = disk;
-
-
             load();
-
-
             treeView1.AfterSelect += TreeView1_AfterSelect;
 
         }
@@ -43,6 +38,7 @@ namespace EMXFileManagement
         //fix subfolder  size
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            listView1.Items.Clear();
             DataComponent _current = root;
             TreeNode CurrentNode = e.Node;
         
@@ -57,7 +53,7 @@ namespace EMXFileManagement
                     _current = _current.SearchComponent(parse_path[i]); 
                 }
             }
-            
+
             if (_current is FolderModel)
             {
                 List<DataComponent> list = ((FolderModel)_current).GetAllInside();
@@ -68,16 +64,11 @@ namespace EMXFileManagement
                     listView1.Items.Add(listViewItem);
                 }
             }
-
           //  MessageBox.Show(fullpath);
         }
 
         void load()
         {
-
-
-            //var objk = root.GetAllInside();
-            //objk = ((FolderModel)objk[2]).GetAllInside();
             List<DataComponent> dataComponents = root.GetAllInside();
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
@@ -85,6 +76,11 @@ namespace EMXFileManagement
             treeView1.Nodes.Add(tre);
             treeView1.ExpandAll();
 
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Thông tin nhóm", " - Nhóm OS bài tập 21");
         }
     }
 }

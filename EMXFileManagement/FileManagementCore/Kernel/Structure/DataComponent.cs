@@ -12,6 +12,7 @@ namespace FileManagementCore.Kernel.Structure
 {
     public class DataComponent
     {
+        
         public int parent_cluster = 2; //to direct to table  default is root
 
         protected byte _flag = 0x02; //0x02 is file
@@ -199,7 +200,10 @@ namespace FileManagementCore.Kernel.Structure
         {
             return Password.Length > 0;
         }
+        
 
+        //remove folder 
+        //composite pattern
         public virtual void Remove(DiskManagement disk)
         {
             int parent_cluster = this.parent_cluster;
