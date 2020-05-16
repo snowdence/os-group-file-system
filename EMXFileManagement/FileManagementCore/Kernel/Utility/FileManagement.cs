@@ -54,8 +54,8 @@ namespace FileManagementCore.Kernel.Utility
             List<int> list_wrote = _disk.WriteBlockData(file._data.ToArray(), file_size);
             SRDETEntry entry = file.GetEntry();
             entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]);
-
-            _disk.WriteNewEntry(entry, parent.dir_cluster);//root cluster is 3
+            entry.FILE_SIZE = BitConverter.GetBytes(file_size);
+            _disk.WriteNewEntry(entry, parent.dir_cluster);//root cluster is 3  
         }
         public void DeleteFile(FileModel file)
         {
@@ -97,7 +97,7 @@ namespace FileManagementCore.Kernel.Utility
             Marshal.FreeHGlobal(ptr);
             return arr;
         }
-        public void CreateFolder(FolderModel parent, string folder_name, string password = "")
+        public FolderModel CreateFolder(FolderModel parent, string folder_name, string password = "")
         {
             int dir_cluster_rdet = parent.dir_cluster;
             int current_dir_cluster_rdet = _disk.GetNextClusterEmpty();
@@ -125,6 +125,7 @@ namespace FileManagementCore.Kernel.Utility
             //_disk.WriteBlockData(getBytes(folderModel.GetEntry()), 4096, current_dir_cluster_rdet);
             _disk.WriteSDETCluster(cluster_sdet, current_dir_cluster_rdet);
             _disk.WriteNewEntry(folderModel.GetEntry(), dir_cluster_rdet);//root cluster is 3
+            return folderModel;
         }
         public List<DataComponent> GetAllInsideFolder(FolderModel folder)
         {
