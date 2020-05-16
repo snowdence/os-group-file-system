@@ -19,15 +19,15 @@ namespace FileManagementCore.Kernel.Utility
         public FileManagement(DiskManagement disk)
         {
             this._disk = disk;
-            
+
         }
 
-        
 
 
-        
+
+
         /// <summary>
-        /// Create a file with model 
+        /// Create a file with model
         /// </summary>
         /// <param name="fileModel"></param>
         /// <returns></returns>
@@ -36,16 +36,16 @@ namespace FileManagementCore.Kernel.Utility
         /// 3. Ghi dữ liệu vào FAT các cluster đã dùng
         /// 4. Ghi entry
         /// 5. Ghi data
-        /// 
+        ///
         public int CreateNewFileRoot(FileModel fileModel) {
             //1. Get all empty cluster and write data
             int file_size = (int) fileModel.DataSize();
             List<int>list_wrote =  _disk.WriteBlockData(fileModel._data.ToArray(), file_size);
             //2. Create entry and write to RDET
             SRDETEntry entry = fileModel.GetEntry();
-            entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]); 
-            _disk.WriteNewEntry(entry, 2);//root cluster is 3  
-            //int get_empty = 
+            entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]);
+            _disk.WriteNewEntry(entry, 2);//root cluster is 3
+            //int get_empty =
             return 0;
         }
         public void AddNewFile(FolderModel parent, FileModel file)
@@ -59,7 +59,7 @@ namespace FileManagementCore.Kernel.Utility
         }
         public void DeleteFile(FileModel file)
         {
-            int parent_cluster = file.parent_cluster; 
+            int parent_cluster = file.parent_cluster;
             if(parent_cluster == 0)
             {
                 //root
@@ -104,7 +104,7 @@ namespace FileManagementCore.Kernel.Utility
             _disk.WriteBlockFileWrittenFat(current_dir_cluster_rdet);//mark
 
 
-            //write buffer with entry 
+            //write buffer with entry
 
             FolderModel folderModel = new FolderModel()
             {
@@ -155,37 +155,39 @@ namespace FileManagementCore.Kernel.Utility
         {
             int parent_cluster = folder.parent_cluster;
             int dir_cluster_sdet = folder.dir_cluster;
-           
+
         }
         public void ExportFile(FileModel file)
         {
-          
-            //rdet
-            //sdet (thu muc con)
+            uint eof = BitConverter.ToUInt32(new byte[] { 0xFF, 0xFF, 0xFF, 0x0F }, 0);
+
+            List<byte> bytes = new List<byte>();
             int first_cluster = file.First_cluster;
-            // first cluster 
-            // FF FF FF 0F : 268435455
-            //268435455
+            uint next_cluster = (uint)first_cluster;
 
-            uint eof = BitConverter.ToUInt32(new byte[] { 0xFF, 0xFF, 0xFF, 0x0F }, 0); 
-            uint value_on_cluster_4 = _disk.ReadFatEntry(first_cluster);
-            uint value_on_cluster_5 = _disk.ReadFatEntry((int)value_on_cluster_4);
-            uint value_on_cluster_6 = _disk.ReadFatEntry((int)value_on_cluster_5);
+            do {
+                SCluster sCluster = _disk.ReadBlockData((int)next_cluster);
+                bytes.AddRange(sCluster.data.ToList());
+                
+                next_cluster = _disk.ReadFatEntry((int)next_cluster);
+            } while (next_cluster != eof);
 
-            SCluster cluster4 = _disk.ReadBlockData(4);
-            SCluster cluster5 = _disk.ReadBlockData(5);
-            SCluster cluster6 = _disk.ReadBlockData(6);
+            var fileFullName = file.FileName + "." + file.FileExt;
+            string path;
 
-            List<byte> list_add = cluster4.data.ToList();
-             list_add.AddRange(cluster5.data.ToList());
-            list_add.AddRange(cluster6.data.ToList());
-            MessageBox.Show(list_add.Count.ToString());
-            
-            // 4 5 6 
+            Console.Write("Where do you want to export \"" + fileFullName + "\"?");
+            Console.WriteLine(" (Ex: D:, D:\\share, C:\\user\\me\\files)");
+            Console.Write("Enter full path here => ");
 
-            //byte[] file_data
-            //File.WriteAllBytes(path, file_data);
+            path = Console.ReadLine();
+            path += "\\\\" + fileFullName;
 
+            FileStream fs = new FileStream(path, FileMode.Create);
+            BinaryWriter bw = new BinaryWriter(fs);
+            for (var i = 0; i < file.FileSize; ++i) {
+              bw.Write(bytes[i]);
+            }
+            bw.Close();
         }
     }
 }

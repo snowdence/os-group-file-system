@@ -106,9 +106,19 @@ namespace FileManagementCoreCLI
 
 
         }
+
+        static void test_export_file(DiskManagement disk, int indexDataComponent) {
+            FileManagement fileManagement = new FileManagement(disk);
+            FolderModel root = new FolderModel();
+            root._core_disk = disk;
+            List<DataComponent> dataComponents = root.GetAllInside();
+
+            FileModel file = (FileModel)dataComponents[indexDataComponent];
+
+            fileManagement.ExportFile(file);
+        }
         static void test_print_delete_file()
         {
-
             DiskManagement disk = new DiskManagement();
             disk.ReadFatCache();
 
@@ -124,18 +134,15 @@ namespace FileManagementCoreCLI
             Console.WriteLine(" \n\n\n");
 
             //dataComponents[2].Remove(disk);
-            
-            root.PrintPretty(" ", true);
-            Console.WriteLine(" \n\n\n");
 
-            FolderModel thumuccon = (FolderModel)dataComponents[2];
-            List<DataComponent> trong_thu_muc_con = thumuccon.GetAllInside();
+            // FolderModel thumuccon = (FolderModel)dataComponents[2];
+            // List<DataComponent> trong_thu_muc_con = thumuccon.GetAllInside();
 
-            FileModel tep_pdf = (FileModel)dataComponents[1];
+            test_export_file(disk, 1);
 
-            fileManagement.ExportFile(tep_pdf);
 
-            Console.WriteLine(" \n\n\n");
+            // Console.WriteLine(file2.FileName + "." + file2.FileExt);
+
 
             //dataComponents[2].Remove(disk);
 
@@ -158,6 +165,7 @@ namespace FileManagementCoreCLI
             // test_add_folder_and_file();
             test_print_delete_file();
 
+            Console.WriteLine("\nDone!\nPress any key to continue...");
             Console.Read();
         }
     }
