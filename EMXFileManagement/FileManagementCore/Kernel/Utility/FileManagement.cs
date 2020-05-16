@@ -44,6 +44,7 @@ namespace FileManagementCore.Kernel.Utility
             //2. Create entry and write to RDET
             SRDETEntry entry = fileModel.GetEntry();
             entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]);
+            entry.FILE_SIZE = BitConverter.GetBytes(file_size);
             _disk.WriteNewEntry(entry, 2);//root cluster is 3
             //int get_empty =
             return 0;
@@ -52,10 +53,12 @@ namespace FileManagementCore.Kernel.Utility
         {
             int file_size = (int)file.DataSize();
             List<int> list_wrote = _disk.WriteBlockData(file._data.ToArray(), file_size);
+
             SRDETEntry entry = file.GetEntry();
             entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]);
             entry.FILE_SIZE = BitConverter.GetBytes(file_size);
             _disk.WriteNewEntry(entry, parent.dir_cluster);//root cluster is 3  
+
         }
         public void DeleteFile(FileModel file)
         {
@@ -157,7 +160,7 @@ namespace FileManagementCore.Kernel.Utility
             int dir_cluster_sdet = folder.dir_cluster;
 
         }
-        public void ExportFile(FileModel file)
+        public void ExportFile(FileModel file, string path)
         {
             uint eof = BitConverter.ToUInt32(new byte[] { 0xFF, 0xFF, 0xFF, 0x0F }, 0);
 
@@ -173,8 +176,10 @@ namespace FileManagementCore.Kernel.Utility
             } while (next_cluster != eof);
 
             var fileFullName = file.FileName + "." + file.FileExt;
-            string path;
 
+            File.WriteAllBytes(path + "\\"+fileFullName, bytes.ToArray()); 
+            /* 
+             * Not need to do this
             Console.Write("Where do you want to export \"" + fileFullName + "\"?");
             Console.WriteLine(" (Ex: D:, D:\\share, C:\\user\\me\\files)");
             Console.Write("Enter full path here => ");
@@ -188,6 +193,7 @@ namespace FileManagementCore.Kernel.Utility
               bw.Write(bytes[i]);
             }
             bw.Close();
+            */
         }
     }
 }

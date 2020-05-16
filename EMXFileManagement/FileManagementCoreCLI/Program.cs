@@ -63,6 +63,8 @@ namespace FileManagementCoreCLI
                 System.IO.File.Delete("disk.dat");
             }
             DiskManagement disk = new DiskManagement();
+            disk.OpenStream();
+
             disk.CreateVolumn();
             disk.ReadFatCache();
             test_createfile(disk, "file1", "txt", "", 4096, 0x42);
@@ -92,7 +94,7 @@ namespace FileManagementCoreCLI
             };
             //0x46
             List<byte> data = Enumerable.Repeat((byte)0x42, 999).ToList();
-            file._data = data;
+            file._data = data;  
             
             //size
             fileManagement.AddNewFile(con, file);
@@ -100,8 +102,8 @@ namespace FileManagementCoreCLI
 
             List<DataComponent> _con_detail = fileManagement.GetAllInsideFolder(con);
             file.FileName = "hihi";
-            fileManagement.AddNewFile((FolderModel)_con_detail[1], file);
-            var sd = fileManagement.GetAllInsideFolder((FolderModel)_con_detail[1]);
+          //  fileManagement.AddNewFile((FolderModel)_con_detail[1], file);
+           // var sd = fileManagement.GetAllInsideFolder((FolderModel)_con_detail[1]);
 
 
 
@@ -115,7 +117,7 @@ namespace FileManagementCoreCLI
 
             FileModel file = (FileModel)dataComponents[indexDataComponent];
 
-            fileManagement.ExportFile(file);
+            fileManagement.ExportFile(file, "");
         }
         static void test_print_delete_file()
         {
@@ -162,8 +164,8 @@ namespace FileManagementCoreCLI
         }
         static void Main(string[] args)
         {
-            // test_add_folder_and_file();
-            test_print_delete_file();
+             test_add_folder_and_file();
+            //test_print_delete_file();
 
             Console.WriteLine("\nDone!\nPress any key to continue...");
             Console.Read();

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -116,7 +117,7 @@ namespace EMXFileManagement
                         status += "Đã bảo mật bằng pass";
                     }
                     string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString() 
-                        ,status
+                        ,status, item.First_cluster.ToString()
                     };
                     var listViewItem = new ListViewItem(row);
 
@@ -198,6 +199,59 @@ namespace EMXFileManagement
         private void xuấtFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+            DataComponent _current = root;
+            var selected = listView1.SelectedItems[0];
+            DialogResult dialogResult = MessageBox.Show("Bạn có muốn xuất file", "Xuất file", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                //do something
+                string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
+
+                string[] parse_path = full_path_file.Split('\\');
+                if (parse_path.Length > 1)
+                {
+                    for (int i = 1; i < parse_path.Length; i++)
+                    {
+                        _current = _current.SearchComponent(parse_path[i]);
+                    }
+                }
+
+                if(_current is FileModel) { 
+                    if (_current.HasPassword())
+                    {
+                        string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
+                        if (promptValue != _current.Password)
+                        {
+                            MessageBox.Show("Mật khẩu sai");
+                            return;
+                        }
+
+                    }
+                    using (var fbd = new FolderBrowserDialog())
+                    {
+                        DialogResult result = fbd.ShowDialog();
+
+                        if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                        {
+                            string path = fbd.SelectedPath;
+                            fileManagement.ExportFile((FileModel)_current, path);
+                        }
+                    }
+                    _current.Recover(disk);
+                    MessageBox.Show("Xuất file thành công" + _current.ToString());
+                    this.load();
+                }
+                else
+                {
+                    MessageBox.Show("Chưa hỗ trợ xuất folder");
+
+                }
+
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                //do something else
+            }
         }
 
         private void đặtPasswordToolStripMenuItem_Click(object sender, EventArgs e)
@@ -277,6 +331,7 @@ namespace EMXFileManagement
             {
                 disk.OpenStream();
                 disk.ReadFatCache();
+                
             }
             
 
@@ -290,9 +345,10 @@ namespace EMXFileManagement
                 FileExt = "txt",
                 Password = ""
             };
-            List<byte> rdata1 = Enumerable.Repeat((byte)0x42, 999).ToList();
+            List<byte> rdata1 = Enumerable.Repeat((byte)0x61, 4097).ToList();
             rfile1._data = rdata1;
 
+         
             FileModel rfile2 = new FileModel()
             {
                 FileName = "rfile2",
@@ -305,7 +361,7 @@ namespace EMXFileManagement
 
             FolderModel root = new FolderModel();
             fm.AddNewFile(root, rfile1);
-            fm.AddNewFile(root, rfile2);
+            //fm.AddNewFile(root, rfile2);
             
 
             // Add folder con and cfile1.pdf
@@ -322,19 +378,9 @@ namespace EMXFileManagement
             fm.AddNewFile(con, cfile1);
 
 
-
-           // List<DataComponent> root_inside = fm.GetAllInsideFolder(root);
-           root.PrintPretty(" ", true);
-
-            
-
-
-
-
-
-
-
-
+           
+            // List<DataComponent> root_inside = fm.GetAllInsideFolder(root);
+            root.PrintPretty(" ", true);
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
@@ -347,7 +393,11 @@ namespace EMXFileManagement
             fileManagement = new FileManagement(disk);
             root = new FolderModel();
             root._core_disk = disk;
+
             load();
+
+            var df = disk.ReadBlockData(3);
+
         }
     }
 }

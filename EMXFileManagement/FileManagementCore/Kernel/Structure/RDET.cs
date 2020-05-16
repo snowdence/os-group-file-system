@@ -59,7 +59,7 @@ namespace FileManagementCore.Kernel.Structure
     //1 block 512byte
     //128 entry
     //64 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 8192)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 4096)]
     public struct SRDET
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
