@@ -35,12 +35,20 @@ namespace FileManagementCore.Kernel.Utility
         {
             get { return _volumn_opened; }
         }
+
+        /// <summary>
+        /// Mở file chứa volumn
+        /// </summary>
+        /// <param name="path_disk">Tên file dữ liệu volumn</param>
         public void OpenStream(string path_disk = "disk.dat")
         {
             _file_stream = new FileStream(path_disk, FileMode.OpenOrCreate);
            // this.ReadFatCache();
             this._volumn_opened = true; 
         }
+        /// <summary>
+        /// Đóng file chứa volumn, tránh việc crash 
+        /// </summary>
         public void CloseStream()
         {
             //_file_stream.Dispose();
@@ -62,6 +70,11 @@ namespace FileManagementCore.Kernel.Utility
         }
 
         #region CREATE_vOLUMN
+        /// <summary>
+        /// Tạo vùng boot sector
+        /// </summary>
+        /// <param name="total_sector"></param>
+        /// <param name="sector_per_fat"></param>
         public void CreateBootSector(int total_sector = 15128576, int sector_per_fat = 14743)
         {
             SBootSector sb = new SBootSector();
@@ -109,6 +122,10 @@ namespace FileManagementCore.Kernel.Utility
             Console.WriteLine("Write Bootsector .... 3282 sector {0} bytes", 3282 * 512);
 
         }
+        /// <summary>
+        /// TẠo vùng FAT
+        /// </summary>
+        /// <param name="num_cluster"></param>
         public void CreateFAT(int num_cluster = 1887104)
         {
             SFileAllocationTable fat1 = new SFileAllocationTable();
@@ -120,6 +137,9 @@ namespace FileManagementCore.Kernel.Utility
             FileIOHelper.Write(_file_stream, fat1);
             Console.WriteLine("Written 2 FAT : 1887104 *4 *2 bytes");
         }
+        /// <summary>
+        /// Tạo vùng RDET 
+        /// </summary>
         public void CreateRDET()
         {
             //cluster 2
@@ -143,6 +163,9 @@ namespace FileManagementCore.Kernel.Utility
             };
             FileIOHelper.Write(_file_stream, srdet_first_default_block);
         }
+        /// <summary>
+        /// Tạo volumn sẽ tạo  3 vùng Bootsector , FAT, RDET
+        /// </summary>
         public void CreateVolumn()
         {
             int size_mb = 7387; //megabytes
@@ -170,15 +193,30 @@ namespace FileManagementCore.Kernel.Utility
         #endregion
 
         #region CALC_OFFSET
+        /// <summary>
+        /// Tính toán cluster n là sector bao nhiêu
+        /// </summary>
+        /// <param name="cluster_n">Cluster n</param>
+        /// <returns>Sector</returns>
         public int GetSectorOffsetFromCluster(int cluster_n)
         {
             int rslt = 32768 + (cluster_n - 2) * 8;
             return rslt;
         }
+        /// <summary>
+        /// Tính toán offset từ sector. 1 sector có 512 bytes
+        /// </summary>
+        /// <param name="sector">sector thứ n</param>
+        /// <returns>Vị trí OFFSET</returns>
         public long CalcMoveOffsetPointerStream(int sector)
         {
             return sector * 512L;
         }
+        /// <summary>
+        /// Tính toán Offset từ cluster n
+        /// </summary>
+        /// <param name="cluster_n">Cluster n</param>
+        /// <returns>Offset đầu của cluster n </returns>
         public long CalcMoveOffsetClusterPointerStream(int cluster_n)
         {
             return GetSectorOffsetFromCluster(cluster_n) * 512L;
@@ -187,6 +225,11 @@ namespace FileManagementCore.Kernel.Utility
         #endregion
 
 
+        /// <summary>
+        /// Cập nhật entry RDET hoặc SDET
+        /// </summary>
+        /// <param name="entry">vùng RDET hoặc SDET</param>
+        /// <param name="cluster">Cluster chứa RDET hoặc SDET</param>
         public void UpdateEntry(SRDETEntry entry, int cluster = 2)
         {
             this.ReadRDETCache(cluster);
@@ -203,6 +246,11 @@ namespace FileManagementCore.Kernel.Utility
             _file_stream.Seek(CalcMoveOffsetClusterPointerStream(cluster), SeekOrigin.Begin);
             FileIOHelper.Write(_file_stream, _rdet_cache);
         }
+        /// <summary>
+        /// Thêm mới entry vào vị trí trống
+        /// </summary>
+        /// <param name="entry">vùng RDET hoặc SDET</param>
+        /// <param name="cluster">Cluster chứa RDET hoặc SDET</param>
         public void WriteNewEntry(SRDETEntry entry, int cluster = 2)
         {
             this.ReadRDETCache(cluster);
@@ -211,6 +259,12 @@ namespace FileManagementCore.Kernel.Utility
             _file_stream.Seek(CalcMoveOffsetClusterPointerStream(cluster), SeekOrigin.Begin);
             FileIOHelper.Write(_file_stream, _rdet_cache);
         }
+
+        /// <summary>
+        /// Viết toàn bộ vùng RDET bằng struct
+        /// </summary>
+        /// <param name="entry">vùng RDET hoặc SDET</param>
+        /// <param name="cluster">Cluster chứa RDET hoặc SDET</param>
         public void WriteSDETCluster(SRDET sdet, int cluster)
         {
             _file_stream.Seek(CalcMoveOffsetClusterPointerStream(cluster), SeekOrigin.Begin);
@@ -218,6 +272,11 @@ namespace FileManagementCore.Kernel.Utility
         }
 
 
+        /// <summary>
+        /// Đọc RDET hoặc SDET và lưu vào _rdet_cache và _rdetTable để quản lý cập nhật dễ dàng
+        /// </summary>
+        /// <param name="cluster">Cluster chứa RDET hoặc SDET</param>
+        /// <returns>SRDET struct</returns>
         public SRDET ReadRDETCache(int cluster = 2)
         {
             if (IsOpened) { 
@@ -228,7 +287,9 @@ namespace FileManagementCore.Kernel.Utility
             }
             return default(SRDET);
         }
-
+        /// <summary>
+        /// Đọc FAT và lưu vào biến (cache) để quản lý.
+        /// </summary>
         public void ReadFatCache()
         {
             _file_stream.Seek(fat1_pos, SeekOrigin.Begin);
@@ -237,23 +298,40 @@ namespace FileManagementCore.Kernel.Utility
             _fileAllocationTable = new FileAllocationTable(_fat_cache);
 
         }
+        /// <summary>
+        /// Lấy value từ cache đã đọc
+        /// </summary>
+        /// <param name="n">entry thứ n (cluster n)</param>
+        /// <returns>Giá trị chứa trong entry đó (uint)</returns>
         public uint ReadFatEntry(int n)
         {
             this.ReadFatCache();// refresh fat
             return _fat_cache.FAT_ENTRY[n];
         }
 
+        /// <summary>
+        /// Lấy cluster trống tiếp theo của FAT, đồng thời đánh dấu đã chứa dữ liệu để tránh file sau ghi đè
+        /// </summary>
+        /// <returns>Cluster còn trống dựa trên bảng FAT</returns>
         public int GetNextClusterEmpty()
         {
             return this._fileAllocationTable.GetNextClusterEmpty();
         }
 
+        /// <summary>
+        /// Ghi EOF  vào entry FAT thứ n (cluster n)
+        /// </summary>
+        /// <param name="cluster">cluster cần đánh dấu trong fat</param>
         public void WriteBlockFileWrittenFat(int cluster)
         {
             _file_stream.Seek(fat1_pos, SeekOrigin.Begin);
             _fileAllocationTable.SetFatEntry(BitConverter.ToUInt32(new byte[4] { 0xFF, 0xFF, 0xFF, 0x0F }, 0), cluster);
             FileIOHelper.Write(_file_stream, _fat_cache);
         }
+        /// <summary>
+        /// Đánh dấu danh sách cluster đã chiếm chỗ 
+        /// </summary>
+        /// <param name="list_cluster">Danh sách cluster đã chiếm theo thứ tự theo link list. Cuối cùng đánh dấu EOF</param>
         public void WriteBlockFileWrittenFat(List<int> list_cluster)
         {
             for (int i = 0; i < list_cluster.Count; i++)
@@ -274,6 +352,12 @@ namespace FileManagementCore.Kernel.Utility
             FileIOHelper.Write(_file_stream, _fat_cache);//fat 2
         }
 
+        /// <summary>
+        /// Ghi dữ liệu vào cluster n
+        /// </summary>
+        /// <param name="buffer">Buffer </param>
+        /// <param name="length">kích thước dữ liệu</param>
+        /// <param name="cluster_n">cluster n</param>
         public void WriteBlockData(byte[] buffer, int length, int cluster_n)
         {
             SCluster cluster = new SCluster();
@@ -282,6 +366,11 @@ namespace FileManagementCore.Kernel.Utility
             FileIOHelper.Write(_file_stream, cluster);
         }
 
+        /// <summary>
+        /// Đọc đữ liệu ở cluster n
+        /// </summary>
+        /// <param name="n">Cluster n</param>
+        /// <returns>SCluster là struct chứa dữ liệu 4096 bytes</returns>
         public SCluster ReadBlockData(int n)
         {
             SCluster cluster = new SCluster();
@@ -291,6 +380,12 @@ namespace FileManagementCore.Kernel.Utility
             return cluster;
         }
 
+        /// <summary>
+        /// Ghi dữ liệu vào disk tự động tìm các cluster trống và đánh dấu
+        /// </summary>
+        /// <param name="buffer">buffer dữ liệu</param>
+        /// <param name="length">kích thước dữ liệu</param>
+        /// <returns>Danh sách cluster đã lưu theo thứ tự</returns>
         public List<int> WriteBlockData(byte[] buffer, int length)
         {
             //length 8888  
@@ -332,6 +427,9 @@ namespace FileManagementCore.Kernel.Utility
 
 
         //RDET import
+        /// <summary>
+        /// Nhập file test
+        /// </summary>
         public void ImportFile()
         {
             _file_stream.Seek(fat1_pos, SeekOrigin.Begin);
@@ -423,11 +521,7 @@ namespace FileManagementCore.Kernel.Utility
         }
 
 
-
-        public SBootSector GetBootSector()
-        {
-            return new SBootSector();
-        }
+ 
 
 
     }

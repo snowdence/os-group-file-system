@@ -34,63 +34,88 @@ namespace EMXFileManagement
         }
         private void openDiskToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Nếu disk đang mở thì đóng lại trước tránh 2 class đọc 1 file sẽ crash
             if (!disk.IsOpened)
             {
-                disk.OpenStream();
+                disk.OpenStream();//mở file disk
             }
+            
+            //đọc fat vào cache (biến trong disk management)
             disk.ReadFatCache();
+            
+            //quản lý file
             fileManagement = new FileManagement(disk);
+            //Tạo folder root mặc định cluster 2 
             root = new FolderModel();
+            //gán disk vào để root có thể sử dụng disk. Vì chỉ được 1 DiskManagement được truy xuất volumn nên mới cần phải gán vậy
             root._core_disk = disk;
+            //lấy cây thư mục từ root, gán vào nodes treeview. 
             load();
         }
+        /// <summary>
+        /// Gọi getallinside sẽ lấy toàn bộ cây thư mục. Reload lại treeview và listview
+        /// </summary>
         void load()
         {
             List<DataComponent> dataComponents = root.GetAllInside();
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
+            //Xây dựng cây thư mục từ root
             TreeNode tre = root.GetTreeNode();
+
+            //xoá tạm các node cũ  (trường hợp f5 lại thì xoá dữ liệu cũ)
+            listView1.Items.Clear();
+
             treeView1.Nodes.Clear();
             treeView1.Nodes.Add(tre);
             treeView1.ExpandAll();
-            listView1.Items.Clear();
 
         }
+
         private void listView1_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
                 if (listView1.FocusedItem.Bounds.Contains(e.Location))
                 {
+                    //Hiển thị menu chuột phải khi chọn 1 phần tử listview
                     contextMenuStrip1.Show(Cursor.Position);
                 }
             }
         }
         //fix subfolder  size
 
+        //Sự kiện khi chọn 1 phần tử trong treeview
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             listView1.Items.Clear();
             DataComponent _current = root;
             TreeNode CurrentNode = e.Node;
 
-            string fullpath = CurrentNode.FullPath;
+
+            string fullpath = CurrentNode.FullPath; // Ví dụ : Root\thumucon\cfil1.txt
             current_location = fullpath;  //full path to element
 
+
+            //Từ 1 phần tử chọn treeview  chọn truy xuất các phần tử con trong Root để tìm phần tử được chọn 
+            //Cấu trúc fullpath 
             if (fullpath == "")
                 return;
             string[] parse_path = fullpath.Split('\\');
             if (parse_path.Length > 1)
             {
+                //i =1  vì bỏ qua ROOT. Tìm trong root là đủ
                 for (int i = 1; i < parse_path.Length; i++)
                 {
                     _current = _current.SearchComponent(parse_path[i]);
                 }
             }
 
+            //Đã tìm được thư mục hoặc file vừa chọn trong treeview
             current_selected = _current;
+            
 
-
+            //nếu current là FolderModel. Do sử dụng composite pattern nên cần check
             if (_current is FolderModel)
             {
 
@@ -120,7 +145,7 @@ namespace EMXFileManagement
                         ,status, item.First_cluster.ToString()
                     };
                     var listViewItem = new ListViewItem(row);
-
+                    //thêm row vào listview
                     listView1.Items.Add(listViewItem);
                 }
             }
@@ -133,6 +158,7 @@ namespace EMXFileManagement
         {
             MessageBox.Show("Thông tin nhóm", " - Nhóm OS bài tập 21");
         }
+
 
         public string ShowDialog(string text, string caption)
         {
@@ -383,6 +409,8 @@ namespace EMXFileManagement
             root.PrintPretty(" ", true);
         }
 
+
+
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             if (!disk.IsOpened)
@@ -395,8 +423,6 @@ namespace EMXFileManagement
             root._core_disk = disk;
 
             load();
-
-            var df = disk.ReadBlockData(3);
 
         }
     }
