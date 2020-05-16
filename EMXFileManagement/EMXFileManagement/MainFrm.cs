@@ -28,6 +28,7 @@ namespace EMXFileManagement
 
             treeView1.AfterSelect += TreeView1_AfterSelect;
             listView1.MouseClick += listView1_MouseClick;
+            
 
         }
         private void openDiskToolStripMenuItem_Click(object sender, EventArgs e)
@@ -96,8 +97,27 @@ namespace EMXFileManagement
                 foreach (DataComponent item in list)
                 {
                     if (item.IsDeleted && !checkFlagDeletedShow.Checked)
-                        continue; 
-                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString() };
+                        continue;
+                    string status = "";
+                    if (item.IsDeleted)
+                    {
+                        status = "Đã xoá";
+                    }
+                    else if (item.IsHidden)
+                    {
+                        status = "Đã ẩn";
+                    }
+                    else if (item.IsReadOnly)
+                    {
+                        status = "Chỉ đọc";
+                    }
+                    if (item.HasPassword())
+                    {
+                        status += "Đã bảo mật bằng pass";
+                    }
+                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString() 
+                        ,status
+                    };
                     var listViewItem = new ListViewItem(row);
 
                     listView1.Items.Add(listViewItem);
@@ -113,10 +133,32 @@ namespace EMXFileManagement
             MessageBox.Show("Thông tin nhóm", " - Nhóm OS bài tập 21");
         }
 
+        public string ShowDialog(string text, string caption)
+        {
+            Form prompt = new Form()
+            {
+                Width = 500,
+                Height = 150,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = caption,
+                StartPosition = FormStartPosition.CenterScreen
+            };
+            Label textLabel = new Label() { Left = 50, Top = 20, Text = text };
+            TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
+            Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(textBox);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(textLabel);
+            prompt.AcceptButton = confirmation;
+
+            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
+        }
         private void xoáToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DataComponent _current = root;
             var selected = listView1.SelectedItems[0];
+            
             DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá?", "Xoá", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
@@ -131,14 +173,26 @@ namespace EMXFileManagement
                         _current = _current.SearchComponent(parse_path[i]);
                     }
                 }
+                if (_current.HasPassword())
+                {
+                    string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
+                    if (promptValue != _current.Password)
+                    {
+                        MessageBox.Show("Mật khẩu sai");
+                        return;
+                    }
+                  
+                }
                 _current.Remove(disk);
                 MessageBox.Show("Xoá file thành công");
+                this.load();
 
             }
             else if (dialogResult == DialogResult.No)
             {
                 //do something else
             }
+
         }
 
         private void xuấtFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -169,8 +223,20 @@ namespace EMXFileManagement
                         _current = _current.SearchComponent(parse_path[i]);
                     }
                 }
+
+                if (_current.HasPassword())
+                {
+                    string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
+                    if (promptValue != _current.Password)
+                    {
+                        MessageBox.Show("Mật khẩu sai");
+                        return;
+                    }
+
+                }
                 _current.Recover(disk);
                 MessageBox.Show("Phục hồi file thành công");
+                this.load();
 
             }
             else if (dialogResult == DialogResult.No)
@@ -271,6 +337,17 @@ namespace EMXFileManagement
 
         }
 
-     
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            if (!disk.IsOpened)
+            {
+                disk.OpenStream();
+            }
+            disk.ReadFatCache();
+            fileManagement = new FileManagement(disk);
+            root = new FolderModel();
+            root._core_disk = disk;
+            load();
+        }
     }
 }
