@@ -1,4 +1,5 @@
-﻿using FileManagementCore.Kernel.Structure;
+﻿using FileManagementCore.Helper;
+using FileManagementCore.Kernel.Structure;
 using FileManagementCore.Kernel.Utility;
 using System;
 using System.Collections.Generic;
@@ -203,7 +204,7 @@ namespace EMXFileManagement
                 if (_current.HasPassword())
                 {
                     string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
-                    if (promptValue != _current.Password)
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
                     {
                         MessageBox.Show("Mật khẩu sai");
                         return;
@@ -307,7 +308,7 @@ namespace EMXFileManagement
                 if (_current.HasPassword())
                 {
                     string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
-                    if (promptValue != _current.Password)
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
                     {
                         MessageBox.Show("Mật khẩu sai");
                         return;
@@ -397,7 +398,7 @@ namespace EMXFileManagement
             {
                 FileName = "cfile1",
                 FileExt = "pdf",
-                Password = "pass"
+                Password = OOHashHelper.getString("pass")
             };
             List<byte> cdata1 = Enumerable.Repeat((byte)0x45, 8270).ToList();
             cfile1._data = cdata1;
