@@ -38,6 +38,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,9 +54,11 @@
             this.phụcHồiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkFlagDeletedShow = new System.Windows.Forms.CheckBox();
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.nhậpFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -113,6 +116,10 @@
             // columnHeader5
             // 
             this.columnHeader5.Text = "Trạng thái";
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Cluster Start";
             // 
             // menuStrip1
             // 
@@ -243,9 +250,20 @@
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
-            // columnHeader6
+            // contextMenuStrip2
             // 
-            this.columnHeader6.Text = "Cluster Start";
+            this.contextMenuStrip2.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.nhậpFileToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(211, 56);
+            // 
+            // nhậpFileToolStripMenuItem
+            // 
+            this.nhậpFileToolStripMenuItem.Name = "nhậpFileToolStripMenuItem";
+            this.nhậpFileToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.nhậpFileToolStripMenuItem.Text = "Nhập file";
+            this.nhậpFileToolStripMenuItem.Click += new System.EventHandler(this.nhậpFileToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -263,6 +281,7 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -294,6 +313,8 @@
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem nhậpFileToolStripMenuItem;
     }
 }
 

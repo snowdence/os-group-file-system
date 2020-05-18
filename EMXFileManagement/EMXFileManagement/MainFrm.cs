@@ -30,9 +30,19 @@ namespace EMXFileManagement
 
             treeView1.AfterSelect += TreeView1_AfterSelect;
             listView1.MouseClick += listView1_MouseClick;
+            listView1.MouseDown += ListView1_MouseDown;
             
 
         }
+
+        private void ListView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (listView1.GetItemAt(e.X, e.Y) == null)
+            {
+                contextMenuStrip2.Show(Cursor.Position);
+            }
+        }
+
         private void openDiskToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Nếu disk đang mở thì đóng lại trước tránh 2 class đọc 1 file sẽ crash
@@ -81,6 +91,10 @@ namespace EMXFileManagement
                 {
                     //Hiển thị menu chuột phải khi chọn 1 phần tử listview
                     contextMenuStrip1.Show(Cursor.Position);
+                }
+                else
+                {
+                    contextMenuStrip2.Show(Cursor.Position);
                 }
             }
         }
@@ -185,22 +199,13 @@ namespace EMXFileManagement
         private void xoáToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DataComponent _current = root;
-            var selected = listView1.SelectedItems[0];
             
             DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá?", "Xoá", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 //do something
-                string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
+                _current = GetCurrentSelectedListView();
 
-                string[] parse_path = full_path_file.Split('\\');
-                if (parse_path.Length > 1)
-                {
-                    for (int i = 1; i < parse_path.Length; i++)
-                    {
-                        _current = _current.SearchComponent(parse_path[i]);
-                    }
-                }
                 if (_current.HasPassword())
                 {
                     string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
@@ -227,27 +232,17 @@ namespace EMXFileManagement
         {
 
             DataComponent _current = root;
-            var selected = listView1.SelectedItems[0];
             DialogResult dialogResult = MessageBox.Show("Bạn có muốn xuất file", "Xuất file", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                //do something
-                string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
+                _current = GetCurrentSelectedListView();
 
-                string[] parse_path = full_path_file.Split('\\');
-                if (parse_path.Length > 1)
-                {
-                    for (int i = 1; i < parse_path.Length; i++)
-                    {
-                        _current = _current.SearchComponent(parse_path[i]);
-                    }
-                }
 
-                if(_current is FileModel) { 
+                if (_current is FileModel) { 
                     if (_current.HasPassword())
                     {
                         string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
-                        if (promptValue != _current.Password)
+                        if (OOHashHelper.getString(promptValue) != _current.Password)
                         {
                             MessageBox.Show("Mật khẩu sai");
                             return;
@@ -286,25 +281,36 @@ namespace EMXFileManagement
 
         }
 
-        private void phụcHồiToolStripMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Chọn file hoặc folder dựa vào mục đã chọn trong treeview
+        /// </summary>
+        /// <returns>Trả về đối tượng tới file hoặc folder đã chọn </returns>
+        public DataComponent GetCurrentSelectedListView()
         {
             DataComponent _current = root;
             var selected = listView1.SelectedItems[0];
+            string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
+
+            string[] parse_path = full_path_file.Split('\\');
+            if (parse_path.Length > 1)
+            {
+                for (int i = 1; i < parse_path.Length; i++)
+                {
+                    _current = _current.SearchComponent(parse_path[i]);
+                }
+            }
+            return _current;
+
+        }
+        private void phụcHồiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent _current = root;
+
             DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn phục hồi?", "Phục hồi", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 //do something
-                string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
-
-                string[] parse_path = full_path_file.Split('\\');
-                if (parse_path.Length > 1)
-                {
-                    for (int i = 1; i < parse_path.Length; i++)
-                    {
-                        _current = _current.SearchComponent(parse_path[i]);
-                    }
-                }
-
+                _current = GetCurrentSelectedListView();
                 if (_current.HasPassword())
                 {
                     string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
@@ -425,6 +431,30 @@ namespace EMXFileManagement
 
             load();
 
+        }
+
+        private void nhậpFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent _current = GetCurrentSelectedListView();
+            string filePath = "";
+            string fileContent = "";
+            if (_current is FolderModel)
+            {
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        //Get the path of specified file
+                        filePath = openFileDialog.FileName;
+                        
+
+                        //Read the contents of the file into a stream
+                        var fileStream = openFileDialog.OpenFile();
+
+                        
+                    }
+                }
+            }
         }
     }
 }
