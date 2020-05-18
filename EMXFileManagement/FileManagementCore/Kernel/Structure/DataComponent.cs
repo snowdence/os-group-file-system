@@ -12,6 +12,7 @@ namespace FileManagementCore.Kernel.Structure
 {
     public class DataComponent
     {
+        
         public int parent_cluster = 2; //to direct to table  default is root
 
         protected byte _flag = 0x02; //0x02 is file
@@ -33,7 +34,7 @@ namespace FileManagementCore.Kernel.Structure
         {
 
         }
-        public virtual TreeNode GetTreeNode()
+        public virtual TreeNode GetTreeNode(bool show_deleted =false, bool show_hidden = false)
         {
             if (_name == "")
             {
@@ -43,10 +44,15 @@ namespace FileManagementCore.Kernel.Structure
                 if(this is FolderModel)
                 {
                     _tree_node = new TreeNode($"{ this.FileName }");
+                    _tree_node.ImageIndex = 0; 
+                    _tree_node.SelectedImageIndex =2 ; 
+
                 }
                 else
                 {
                     _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt}");
+                    _tree_node.ImageIndex = 1;
+                    _tree_node.SelectedImageIndex = 1;
 
                 }
             }
@@ -54,6 +60,11 @@ namespace FileManagementCore.Kernel.Structure
             _tree_node.Tag = $"{FileName}.{FileExt}";
             foreach(DataComponent dataComponent in _list_component)
             {
+                if (show_deleted == false && dataComponent.IsDeleted)
+                {
+                    continue;
+                }
+
                 _tree_node.Nodes.Add(dataComponent.GetTreeNode());
             }
             return _tree_node;
@@ -132,7 +143,7 @@ namespace FileManagementCore.Kernel.Structure
                 LAST_ACCESS_DATE = BitConverter.GetBytes(DateTimeHelper.ToDOSDate(_created_datetime)),
                 MODIFIED_DATETIME = BitConverter.GetBytes(DateTimeHelper.ToDOSDateTimeInt(_modified_date)),
                 FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(_first_cluster),
-                FILE_SIZE = BitConverter.GetBytes(this.DataSize()),
+                FILE_SIZE = BitConverter.GetBytes(_file_size),
                 PASSWORD = _password
             };
         }
@@ -199,7 +210,10 @@ namespace FileManagementCore.Kernel.Structure
         {
             return Password.Length > 0;
         }
+        
 
+        //remove folder 
+        //composite pattern
         public virtual void Remove(DiskManagement disk)
         {
             int parent_cluster = this.parent_cluster;

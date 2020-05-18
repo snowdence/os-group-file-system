@@ -44,7 +44,7 @@ namespace FileManagementCore.Kernel.Structure
         {
             return _clus_available.Count;
         }
-
+        // _clus_available 4 5 6 
         public int GetNextClusterEmpty()
         {
             return _clus_available.Dequeue();

@@ -63,20 +63,22 @@ namespace FileManagementCoreCLI
                 System.IO.File.Delete("disk.dat");
             }
             DiskManagement disk = new DiskManagement();
+            disk.OpenStream();
+
             disk.CreateVolumn();
             disk.ReadFatCache();
             test_createfile(disk, "file1", "txt", "", 4096, 0x42);
             test_createfile(disk, "file2", "exe", "bimat", 8888, 0x43);
 
-            FolderManagement folderManagement = new FolderManagement(disk);
             FolderModel folder = new FolderModel()
             {
                 dir_cluster = 2
             };
 
+            FileManagement fileManagement = new FileManagement(disk);
 
-            folderManagement.CreateFolder(folder, "thumuccon", "");
-            List<DataComponent> obj = folderManagement.GetAllInsideFolder(folder);
+            fileManagement.CreateFolder(folder, "thumuccon", "");
+            List<DataComponent> obj = fileManagement.GetAllInsideFolder(folder);
             FolderModel con = (FolderModel)obj[2];
 
 
@@ -92,28 +94,36 @@ namespace FileManagementCoreCLI
             };
             //0x46
             List<byte> data = Enumerable.Repeat((byte)0x42, 999).ToList();
-            file._data = data;
+            file._data = data;  
             
-
-            FileManagement fileManagement = new FileManagement(disk);
+            //size
             fileManagement.AddNewFile(con, file);
-            folderManagement.CreateFolder(con, "dirindir", "pass");
+            fileManagement.CreateFolder(con, "dirindir", "pass");
 
-            List<DataComponent> _con_detail = folderManagement.GetAllInsideFolder(con);
+            List<DataComponent> _con_detail = fileManagement.GetAllInsideFolder(con);
             file.FileName = "hihi";
-            fileManagement.AddNewFile((FolderModel)_con_detail[1], file);
-            var sd = folderManagement.GetAllInsideFolder((FolderModel)_con_detail[1]);
+          //  fileManagement.AddNewFile((FolderModel)_con_detail[1], file);
+           // var sd = fileManagement.GetAllInsideFolder((FolderModel)_con_detail[1]);
 
 
 
         }
+
+        static void test_export_file(DiskManagement disk, int indexDataComponent) {
+            FileManagement fileManagement = new FileManagement(disk);
+            FolderModel root = new FolderModel();
+            root._core_disk = disk;
+            List<DataComponent> dataComponents = root.GetAllInside();
+
+            FileModel file = (FileModel)dataComponents[indexDataComponent];
+
+            fileManagement.ExportFile(file, "");
+        }
         static void test_print_delete_file()
         {
-
             DiskManagement disk = new DiskManagement();
             disk.ReadFatCache();
 
-            FolderManagement folderManagement = new FolderManagement(disk);
             FileManagement fileManagement = new FileManagement(disk);
 
             FolderModel root = new FolderModel();
@@ -121,16 +131,25 @@ namespace FileManagementCoreCLI
             //var objk = root.GetAllInside();
             //objk = ((FolderModel)objk[2]).GetAllInside();
             List<DataComponent> dataComponents  =  root.GetAllInside();
+
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
 
-            dataComponents[2].Remove(disk);
-            root.PrintPretty(" ", true);
-            Console.WriteLine(" \n\n\n");
+            //dataComponents[2].Remove(disk);
+
+            // FolderModel thumuccon = (FolderModel)dataComponents[2];
+            // List<DataComponent> trong_thu_muc_con = thumuccon.GetAllInside();
+
+            test_export_file(disk, 1);
+
+
+            // Console.WriteLine(file2.FileName + "." + file2.FileExt);
+
+
             //dataComponents[2].Remove(disk);
 
             /*
-            fileManagement.DeleteFile((FileModel)dataComponents[0]);
+            fileManagement.DeleteFile((FileModel)dataComponents[0]~)~;
             dataComponents = root.GetAllInside();
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
@@ -145,9 +164,10 @@ namespace FileManagementCoreCLI
         }
         static void Main(string[] args)
         {
-            //test_add_folder_and_file();
-            test_print_delete_file();
+             test_add_folder_and_file();
+            //test_print_delete_file();
 
+            Console.WriteLine("\nDone!\nPress any key to continue...");
             Console.Read();
         }
     }

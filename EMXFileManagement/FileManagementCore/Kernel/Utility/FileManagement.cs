@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FileManagementCore.Kernel.Utility
 {
@@ -18,15 +19,15 @@ namespace FileManagementCore.Kernel.Utility
         public FileManagement(DiskManagement disk)
         {
             this._disk = disk;
-            
+
         }
 
-        
 
 
-        
+
+
         /// <summary>
-        /// Create a file with model 
+        /// Create a file with model
         /// </summary>
         /// <param name="fileModel"></param>
         /// <returns></returns>
@@ -35,41 +36,58 @@ namespace FileManagementCore.Kernel.Utility
         /// 3. Ghi dữ liệu vào FAT các cluster đã dùng
         /// 4. Ghi entry
         /// 5. Ghi data
-        /// 
+        ///
         public int CreateNewFileRoot(FileModel fileModel) {
             //1. Get all empty cluster and write data
             int file_size = (int) fileModel.DataSize();
             List<int>list_wrote =  _disk.WriteBlockData(fileModel._data.ToArray(), file_size);
             //2. Create entry and write to RDET
             SRDETEntry entry = fileModel.GetEntry();
-            entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]); 
-            _disk.WriteNewEntry(entry, 2);//root cluster is 3  
-            //int get_empty = 
+            entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]);
+            entry.FILE_SIZE = BitConverter.GetBytes(file_size);
+            _disk.WriteNewEntry(entry, 2);//root cluster is 3
+            //int get_empty =
             return 0;
         }
+        /// <summary>
+        /// Thêm file mới vào thư mục sữan có
+        /// </summary>
+        /// <param name="parent">Thư mục cha cần thêm file</param>
+        /// <param name="file">File cần thêm vào thư mục</param>
         public void AddNewFile(FolderModel parent, FileModel file)
         {
             int file_size = (int)file.DataSize();
             List<int> list_wrote = _disk.WriteBlockData(file._data.ToArray(), file_size);
+
             SRDETEntry entry = file.GetEntry();
             entry.FIRST_CLUSTER_LOW_WORD = BitConverter.GetBytes(list_wrote[0]);
-            
+            entry.FILE_SIZE = BitConverter.GetBytes(file_size);
             _disk.WriteNewEntry(entry, parent.dir_cluster);//root cluster is 3  
+
         }
+
+        /// <summary>
+        /// Xoá file 
+        /// </summary>
+        /// <param name="file">File cần xoá</param>
         public void DeleteFile(FileModel file)
         {
-            int parent_cluster = file.parent_cluster; 
+            int parent_cluster = file.parent_cluster;
             if(parent_cluster == 0)
             {
                 //root
                 parent_cluster = 2;
             }
-
+            //bit đánh dấu xoá 0xE5 là xoá 0x00 là bình thường
             file.Reversed = 0xE5;
             SRDETEntry entry = file.GetEntry();
             _disk.UpdateEntry(entry, parent_cluster);
         }
 
+        /// <summary>
+        /// Phục hồi file 
+        /// </summary>
+        /// <param name="file">File cần phục hồi</param>
         public void RecoverFile(FileModel file)
         {
             int parent_cluster = file.parent_cluster;
@@ -78,13 +96,17 @@ namespace FileManagementCore.Kernel.Utility
                 //root
                 parent_cluster = 2;
             }
-
+            //bit đánh dấu xoá 0xE5 là xoá 0x00 là bình thường         
             file.Reversed = 0x00;
             SRDETEntry entry = file.GetEntry();
             _disk.UpdateEntry(entry, parent_cluster);
         }
 
-
+        /// <summary>
+        /// Hàm lấy byte từ 1 cấu trúc Struct
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         byte[] getBytes(SRDETEntry str)
         {
             int size = Marshal.SizeOf(str);
@@ -96,14 +118,22 @@ namespace FileManagementCore.Kernel.Utility
             Marshal.FreeHGlobal(ptr);
             return arr;
         }
-        public void CreateFolder(FolderModel parent, string folder_name, string password = "")
+
+        /// <summary>
+        /// Tạo thư mục mới
+        /// </summary>
+        /// <param name="parent">Thư mục cha</param>
+        /// <param name="folder_name">Tên thư muccj</param>
+        /// <param name="password">Mật khẩu</param>
+        /// <returns></returns>
+        public FolderModel CreateFolder(FolderModel parent, string folder_name, string password = "")
         {
             int dir_cluster_rdet = parent.dir_cluster;
             int current_dir_cluster_rdet = _disk.GetNextClusterEmpty();
             _disk.WriteBlockFileWrittenFat(current_dir_cluster_rdet);//mark
 
 
-            //write buffer with entry 
+            //write buffer with entry
 
             FolderModel folderModel = new FolderModel()
             {
@@ -123,10 +153,14 @@ namespace FileManagementCore.Kernel.Utility
             cluster_sdet.entries[0] = folderModel.GetEntry();
             //_disk.WriteBlockData(getBytes(folderModel.GetEntry()), 4096, current_dir_cluster_rdet);
             _disk.WriteSDETCluster(cluster_sdet, current_dir_cluster_rdet);
-            _disk.WriteNewEntry(folderModel.GetEntry(), dir_cluster_rdet);//root cluster is 3  
-
-
+            _disk.WriteNewEntry(folderModel.GetEntry(), dir_cluster_rdet);//root cluster is 3
+            return folderModel;
         }
+        /// <summary>
+        /// Lấy toàn bộ thư mục, tệp tin trong folder
+        /// </summary>
+        /// <param name="folder">Folder cần lấy</param>
+        /// <returns>Danh sách DataComponent (FileModel hoặc FolderModel) </returns>
         public List<DataComponent> GetAllInsideFolder(FolderModel folder)
         {
             List<DataComponent> data = new List<DataComponent>();
@@ -151,11 +185,47 @@ namespace FileManagementCore.Kernel.Utility
             }
             return data;
         }
-        public void DeleteFolder(FolderModel folder)
+
+        /// <summary>
+        /// Xuất file
+        /// </summary>
+        /// <param name="file">File cần xuất</param>
+        /// <param name="path">Đường dẫn xuất file (Thư mục)</param>
+        public void ExportFile(FileModel file, string path)
         {
-            int parent_cluster = folder.parent_cluster;
-            int dir_cluster_sdet = folder.dir_cluster;
-           
+            
+            uint eof = BitConverter.ToUInt32(new byte[] { 0xFF, 0xFF, 0xFF, 0x0F }, 0);
+
+            List<byte> bytes = new List<byte>();
+            int first_cluster = file.First_cluster;
+            uint next_cluster = (uint)first_cluster;
+
+            do {
+                SCluster sCluster = _disk.ReadBlockData((int)next_cluster);
+                bytes.AddRange(sCluster.data.ToList());
+                
+                next_cluster = _disk.ReadFatEntry((int)next_cluster);
+            } while (next_cluster != eof);
+
+            var fileFullName = file.FileName + "." + file.FileExt;
+
+            File.WriteAllBytes(path + "\\"+fileFullName, bytes.ToArray()); 
+            /* 
+             * Not need to do this
+            Console.Write("Where do you want to export \"" + fileFullName + "\"?");
+            Console.WriteLine(" (Ex: D:, D:\\share, C:\\user\\me\\files)");
+            Console.Write("Enter full path here => ");
+
+            path = Console.ReadLine();
+            path += "\\\\" + fileFullName;
+
+            FileStream fs = new FileStream(path, FileMode.Create);
+            BinaryWriter bw = new BinaryWriter(fs);
+            for (var i = 0; i < file.FileSize; ++i) {
+              bw.Write(bytes[i]);
+            }
+            bw.Close();
+            */
         }
     }
 }

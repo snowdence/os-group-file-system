@@ -56,8 +56,10 @@ namespace FileManagementCore.Kernel.Structure
         }
     }
     //14743 sector manage 7.38gb
-    //1 block 512
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 8192)]
+    //1 block 512byte
+    //128 entry
+    //64 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 4096)]
     public struct SRDET
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]

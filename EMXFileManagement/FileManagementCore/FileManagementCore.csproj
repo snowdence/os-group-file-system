@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Helper\DateTimeHelper.cs" />
     <Compile Include="Helper\FileIOHelper.cs" />
+    <Compile Include="Helper\OOHashHelper.cs" />
     <Compile Include="Kernel\Enum.cs" />
     <Compile Include="Kernel\Structure\BootSector.cs" />
     <Compile Include="Kernel\Structure\Cluster.cs" />
@@ -62,7 +63,6 @@
     <Compile Include="Kernel\Structure\RDET.cs" />
     <Compile Include="Kernel\Utility\DiskManagement.cs" />
     <Compile Include="Kernel\Utility\FileManagement.cs" />
-    <Compile Include="Kernel\Utility\FolderManagement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
