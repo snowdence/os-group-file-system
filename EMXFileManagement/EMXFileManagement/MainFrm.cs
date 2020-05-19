@@ -403,7 +403,7 @@ namespace EMXFileManagement
 
             FolderModel con =  fm.CreateFolder(root, "TMCon", "");
             FileModel cfile1 = new FileModel()
-            {
+            { 
                 FileName = "cfile1",
                 FileExt = "pdf",
                 Password = OOHashHelper.getString("pass")

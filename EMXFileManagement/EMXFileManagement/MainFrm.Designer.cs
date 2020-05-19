@@ -61,6 +61,7 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -97,7 +98,7 @@
             this.columnHeader6});
             this.listView1.FullRowSelect = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(292, 74);
+            this.listView1.Location = new System.Drawing.Point(286, 76);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(972, 497);
             this.listView1.TabIndex = 1;
@@ -154,28 +155,28 @@
             // openDiskToolStripMenuItem
             // 
             this.openDiskToolStripMenuItem.Name = "openDiskToolStripMenuItem";
-            this.openDiskToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.openDiskToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
             this.openDiskToolStripMenuItem.Text = "Open disk";
             this.openDiskToolStripMenuItem.Click += new System.EventHandler(this.openDiskToolStripMenuItem_Click);
             // 
             // createVolumnToolStripMenuItem
             // 
             this.createVolumnToolStripMenuItem.Name = "createVolumnToolStripMenuItem";
-            this.createVolumnToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.createVolumnToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
             this.createVolumnToolStripMenuItem.Text = "Create Volumn";
             this.createVolumnToolStripMenuItem.Click += new System.EventHandler(this.createVolumnToolStripMenuItem_Click);
             // 
             // addSampleFileToolStripMenuItem
             // 
             this.addSampleFileToolStripMenuItem.Name = "addSampleFileToolStripMenuItem";
-            this.addSampleFileToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addSampleFileToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
             this.addSampleFileToolStripMenuItem.Text = "Add Sample File";
             this.addSampleFileToolStripMenuItem.Click += new System.EventHandler(this.addSampleFileToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // helpToolStripMenuItem
@@ -237,7 +238,7 @@
             this.checkFlagDeletedShow.AutoSize = true;
             this.checkFlagDeletedShow.Checked = true;
             this.checkFlagDeletedShow.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkFlagDeletedShow.Location = new System.Drawing.Point(19, 21);
+            this.checkFlagDeletedShow.Location = new System.Drawing.Point(22, 28);
             this.checkFlagDeletedShow.Name = "checkFlagDeletedShow";
             this.checkFlagDeletedShow.Size = new System.Drawing.Size(109, 21);
             this.checkFlagDeletedShow.TabIndex = 4;
@@ -277,7 +278,8 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton2,
-            this.toolStripButton3});
+            this.toolStripButton3,
+            this.toolStripButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 28);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1300, 27);
@@ -322,6 +324,15 @@
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Cấu trúc thư mục";
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton4.Text = "toolStripButton4";
             // 
             // MainFrm
             // 
@@ -381,6 +392,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
     }
 }
 
