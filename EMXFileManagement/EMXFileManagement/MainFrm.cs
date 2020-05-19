@@ -219,6 +219,7 @@ namespace EMXFileManagement
                   
                 }
                 _current.Remove(disk);
+             
                 MessageBox.Show("Xoá file thành công");
                 this.load();
 
@@ -435,28 +436,44 @@ namespace EMXFileManagement
 
         }
 
+
         private void nhậpFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DataComponent _current = GetCurrentSelectedListView();
+            //DataComponent _current = GetCurrentSelectedListView();
             string filePath = "";
             string fileContent = "";
-            if (_current is FolderModel)
+            string fileName = "";
+            
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+                    fileName = Path.GetFileNameWithoutExtension(filePath);
+                    fileContent = Path.GetExtension(filePath);
+
+                    FileModel file = new FileModel()
                     {
-                        //Get the path of specified file
-                        filePath = openFileDialog.FileName;
-                        
+                        FileName = fileName,
+                        FileExt = fileContent,
+                        Created_datetime = DateTime.Now,
+                        Last_access_date = DateTime.Now,
+                        Modified_date = DateTime.Now,
+                        Password = "",
+                    };
 
-                        //Read the contents of the file into a stream
-                        var fileStream = openFileDialog.OpenFile();
+                    byte[] fileOrigin = File.ReadAllBytes(filePath);
+                    List<byte> data = fileOrigin.ToList();
+                    file._data = data;
 
-                        
-                    }
+                    fileManagement.AddNewFile(root, file);
+                    MessageBox.Show($"Thêm file thành công{fileName}.{fileContent}");
+
+                    load();
                 }
             }
+      
         }
     }
 }
