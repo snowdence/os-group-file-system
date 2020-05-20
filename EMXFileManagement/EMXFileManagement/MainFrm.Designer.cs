@@ -52,7 +52,7 @@
             this.xuấtFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.đặtPasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.phụcHồiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkFlagDeletedShow = new System.Windows.Forms.CheckBox();
+            this.thuộcTínhToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.nhậpFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,9 +60,10 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.thuộcTínhToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ẩnFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkFlagHiddenShow = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -138,7 +139,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1300, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1297, 28);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -199,13 +200,14 @@
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ẩnFileToolStripMenuItem,
             this.xoáToolStripMenuItem,
             this.xuấtFileToolStripMenuItem,
             this.đặtPasswordToolStripMenuItem,
             this.phụcHồiToolStripMenuItem,
             this.thuộcTínhToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(211, 152);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(168, 148);
             // 
             // xoáToolStripMenuItem
             // 
@@ -235,17 +237,12 @@
             this.phụcHồiToolStripMenuItem.Text = "Phục hồi";
             this.phụcHồiToolStripMenuItem.Click += new System.EventHandler(this.phụcHồiToolStripMenuItem_Click);
             // 
-            // checkFlagDeletedShow
+            // thuộcTínhToolStripMenuItem
             // 
-            this.checkFlagDeletedShow.AutoSize = true;
-            this.checkFlagDeletedShow.Checked = true;
-            this.checkFlagDeletedShow.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkFlagDeletedShow.Location = new System.Drawing.Point(22, 28);
-            this.checkFlagDeletedShow.Name = "checkFlagDeletedShow";
-            this.checkFlagDeletedShow.Size = new System.Drawing.Size(109, 21);
-            this.checkFlagDeletedShow.TabIndex = 4;
-            this.checkFlagDeletedShow.Text = "Hiện đã xoá ";
-            this.checkFlagDeletedShow.UseVisualStyleBackColor = true;
+            this.thuộcTínhToolStripMenuItem.Name = "thuộcTínhToolStripMenuItem";
+            this.thuộcTínhToolStripMenuItem.Size = new System.Drawing.Size(167, 24);
+            this.thuộcTínhToolStripMenuItem.Text = "Thuộc tính";
+            this.thuộcTínhToolStripMenuItem.Click += new System.EventHandler(this.thuộcTínhToolStripMenuItem_Click);
             // 
             // btnRefresh
             // 
@@ -284,7 +281,7 @@
             this.toolStripButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 28);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1300, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(1297, 27);
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -294,7 +291,7 @@
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(29, 28);
+            this.toolStripButton1.Size = new System.Drawing.Size(29, 24);
             this.toolStripButton1.Text = "Load ổ cứng";
             // 
             // toolStripButton2
@@ -303,7 +300,7 @@
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(29, 28);
+            this.toolStripButton2.Size = new System.Drawing.Size(29, 24);
             this.toolStripButton2.Text = "Tạo mới ổ cứng";
             // 
             // toolStripButton3
@@ -312,13 +309,23 @@
             this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(29, 28);
+            this.toolStripButton3.Size = new System.Drawing.Size(29, 24);
             this.toolStripButton3.Text = "Xoá ổ cứng";
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton4.Text = "Thùng rác";
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkFlagHiddenShow);
             this.groupBox1.Controls.Add(this.treeView1);
-            this.groupBox1.Controls.Add(this.checkFlagDeletedShow);
             this.groupBox1.Controls.Add(this.btnRefresh);
             this.groupBox1.Location = new System.Drawing.Point(12, 74);
             this.groupBox1.Name = "groupBox1";
@@ -327,35 +334,37 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Cấu trúc thư mục";
             // 
-            // toolStripButton4
+            // ẩnFileToolStripMenuItem
             // 
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(29, 28);
-            this.toolStripButton4.Text = "Thùng rác";
-            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
+            this.ẩnFileToolStripMenuItem.Name = "ẩnFileToolStripMenuItem";
+            this.ẩnFileToolStripMenuItem.Size = new System.Drawing.Size(167, 24);
+            this.ẩnFileToolStripMenuItem.Text = "Ẩn file";
+            this.ẩnFileToolStripMenuItem.Click += new System.EventHandler(this.ẩnFileToolStripMenuItem_Click);
             // 
-            // thuộcTínhToolStripMenuItem
+            // checkFlagHiddenShow
             // 
-            this.thuộcTínhToolStripMenuItem.Name = "thuộcTínhToolStripMenuItem";
-            this.thuộcTínhToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.thuộcTínhToolStripMenuItem.Text = "Thuộc tính";
-            this.thuộcTínhToolStripMenuItem.Click += new System.EventHandler(this.thuộcTínhToolStripMenuItem_Click);
+            this.checkFlagHiddenShow.AutoSize = true;
+            this.checkFlagHiddenShow.Checked = true;
+            this.checkFlagHiddenShow.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkFlagHiddenShow.Location = new System.Drawing.Point(24, 33);
+            this.checkFlagHiddenShow.Name = "checkFlagHiddenShow";
+            this.checkFlagHiddenShow.Size = new System.Drawing.Size(121, 21);
+            this.checkFlagHiddenShow.TabIndex = 6;
+            this.checkFlagHiddenShow.Text = "Hiện file đã ẩn";
+            this.checkFlagHiddenShow.UseVisualStyleBackColor = true;
             // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1300, 585);
+            this.ClientSize = new System.Drawing.Size(1297, 594);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainFrm";
-            this.Text = "Form1";
+            this.Text = "Hệ thống quản lý tệp tin OS";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
@@ -390,7 +399,6 @@
         private System.Windows.Forms.ToolStripMenuItem phụcHồiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addSampleFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openDiskToolStripMenuItem;
-        private System.Windows.Forms.CheckBox checkFlagDeletedShow;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.ColumnHeader columnHeader5;
@@ -404,6 +412,8 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripMenuItem thuộcTínhToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ẩnFileToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkFlagHiddenShow;
     }
 }
 

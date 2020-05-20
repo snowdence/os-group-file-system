@@ -26,6 +26,7 @@ namespace EMXFileManagement
 
         public string current_location = "";
         public DataComponent current_selected;
+        bool recycle_bin = false;
         public MainFrm()
         {
             InitializeComponent();
@@ -72,18 +73,23 @@ namespace EMXFileManagement
         /// </summary>
         void load()
         {
+            recycle_bin = false;
             List<DataComponent> dataComponents = root.GetAllInside();
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
             //Xây dựng cây thư mục từ root
-            TreeNode tre = root.GetTreeNode();
+            
+
+            TreeNode tre = root.GetTreeNode(checkFlagHiddenShow.Checked);
 
             //xoá tạm các node cũ  (trường hợp f5 lại thì xoá dữ liệu cũ)
             listView1.Items.Clear();
 
             treeView1.Nodes.Clear();
             treeView1.Nodes.Add(tre);
+            treeView1.SelectedNode = tre;
             treeView1.ExpandAll();
+
 
         }
 
@@ -130,6 +136,7 @@ namespace EMXFileManagement
                     _current = _current.SearchComponent(parse_path[i]);
                 }
             }
+           
 
             //Đã tìm được thư mục hoặc file vừa chọn trong treeview
             current_selected = _current;
@@ -138,12 +145,24 @@ namespace EMXFileManagement
             //nếu current là FolderModel. Do sử dụng composite pattern nên cần check
             if (_current is FolderModel)
             {
+                List<DataComponent> list = new List<DataComponent>();
 
-                List<DataComponent> list = ((FolderModel)_current).GetAllInside();
+                if (recycle_bin)
+                {
+                    list = ((FolderModel)_current).GetAllInsideRecycleBin();
+                }
+                else
+                {
+                    list = ((FolderModel)_current).GetAllInside();
+                }
+
+
                 foreach (DataComponent item in list)
                 {
-                    if (item.IsDeleted && !checkFlagDeletedShow.Checked)
+                    if(item.IsHidden && checkFlagHiddenShow.Checked == false)
+                    {
                         continue;
+                    }
                     string status = "";
                     if (item.IsDeleted)
                     {
@@ -289,6 +308,38 @@ namespace EMXFileManagement
         {
 
         }
+        private void ẩnFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent _current = root;
+
+            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn ẩn file?", "Ẩn file", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                //do something
+                _current = GetCurrentSelectedListView();
+
+                if (_current.HasPassword())
+                {
+                    string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
+                    {
+                        MessageBox.Show("Mật khẩu sai");
+                        return;
+                    }
+
+                }
+                _current.Hide(disk);
+
+                MessageBox.Show("Ẩn file thành công");
+                this.load();
+
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                //do something else
+            }
+
+        }
 
         /// <summary>
         /// Chọn file hoặc folder dựa vào mục đã chọn trong treeview
@@ -409,6 +460,9 @@ namespace EMXFileManagement
             // Add folder con and cfile1.pdf
 
             FolderModel con = fm.CreateFolder(root, "TMCon", "");
+
+
+
             FileModel cfile1 = new FileModel()
             {
                 FileName = "cfile1",
@@ -419,9 +473,18 @@ namespace EMXFileManagement
             cfile1._data = cdata1;
             fm.AddNewFile(con, cfile1);
 
+            FolderModel con_cua_con = fm.CreateFolder(con, "ConcuaCon", "");
 
+            FileModel cFileCon1 = new FileModel()
+            {
+                FileName = "cFileCon1",
+                FileExt = "exe",
+                Password = OOHashHelper.getString("")
+            };
+            List<byte> cdatacon1 = Enumerable.Repeat((byte)0x49, 9999).ToList();
+            cFileCon1._data = cdatacon1;
+            fm.AddNewFile(con_cua_con, cFileCon1);
 
-            // List<DataComponent> root_inside = fm.GetAllInsideFolder(root);
             root.PrintPretty(" ", true);
         }
 
@@ -437,9 +500,7 @@ namespace EMXFileManagement
             fileManagement = new FileManagement(disk);
             root = new FolderModel();
             root._core_disk = disk;
-
             load();
-
         }
 
 
@@ -488,9 +549,37 @@ namespace EMXFileManagement
 
         }
 
+
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
+            recycle_bin = true;
             Console.WriteLine("Mở thùng rác");
+
+            if (!disk.IsOpened)
+            {
+                disk.OpenStream();
+            }
+            disk.ReadFatCache();
+            fileManagement = new FileManagement(disk);
+            root = new FolderModel();
+            root._core_disk = disk;
+
+            List<DataComponent> dataComponents = root.GetAllInsideRecycleBin();
+            root.PrintPretty(" ", true);
+            Console.WriteLine(" \n\n\n");
+            //Xây dựng cây thư mục từ root
+
+
+            TreeNode tre = root.GetRecycleBinNode();
+
+            //xoá tạm các node cũ  (trường hợp f5 lại thì xoá dữ liệu cũ)
+            listView1.Items.Clear();
+
+            treeView1.Nodes.Clear();
+            treeView1.Nodes.Add(tre);
+            treeView1.SelectedNode = tre;
+            treeView1.ExpandAll();
+
 
         }
 
@@ -542,5 +631,7 @@ namespace EMXFileManagement
             DataComponent listview_selected_item = GetCurrentSelectedListView();
             ShowProperty();
         }
+
+      
     }
 }
