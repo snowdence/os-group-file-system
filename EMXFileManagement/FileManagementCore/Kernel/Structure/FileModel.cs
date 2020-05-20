@@ -34,7 +34,7 @@ namespace FileManagementCore.Kernel.Structure
         }
         public override int DataSize()
         {
-            return this._data.Count;
+            return FileSize;
         }
 
         public virtual SRDETEntry GetEntry()

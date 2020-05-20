@@ -1,4 +1,5 @@
-﻿using FileManagementCore.Helper;
+﻿using EMXFileManagement.Module;
+using FileManagementCore.Helper;
 using FileManagementCore.Kernel.Structure;
 using FileManagementCore.Kernel.Utility;
 using System;
@@ -22,6 +23,7 @@ namespace EMXFileManagement
 
         FileManagement fileManagement;
         FolderModel root;
+
         public string current_location = "";
         public DataComponent current_selected;
         public MainFrm()
@@ -31,15 +33,17 @@ namespace EMXFileManagement
             treeView1.AfterSelect += TreeView1_AfterSelect;
             listView1.MouseClick += listView1_MouseClick;
             listView1.MouseDown += ListView1_MouseDown;
-            
 
         }
 
         private void ListView1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (listView1.GetItemAt(e.X, e.Y) == null)
+            if (e.Button == MouseButtons.Right)
             {
-                contextMenuStrip2.Show(Cursor.Position);
+                if (listView1.GetItemAt(e.X, e.Y) == null)
+                {
+                    contextMenuStrip2.Show(Cursor.Position);
+                }
             }
         }
 
@@ -50,10 +54,10 @@ namespace EMXFileManagement
             {
                 disk.OpenStream();//mở file disk
             }
-            
+
             //đọc fat vào cache (biến trong disk management)
             disk.ReadFatCache();
-            
+
             //quản lý file
             fileManagement = new FileManagement(disk);
             //Tạo folder root mặc định cluster 2 
@@ -103,6 +107,7 @@ namespace EMXFileManagement
         //Sự kiện khi chọn 1 phần tử trong treeview
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            current_selected = root;
             listView1.Items.Clear();
             DataComponent _current = root;
             TreeNode CurrentNode = e.Node;
@@ -128,7 +133,7 @@ namespace EMXFileManagement
 
             //Đã tìm được thư mục hoặc file vừa chọn trong treeview
             current_selected = _current;
-            
+
 
             //nếu current là FolderModel. Do sử dụng composite pattern nên cần check
             if (_current is FolderModel)
@@ -156,7 +161,7 @@ namespace EMXFileManagement
                     {
                         status += "Đã bảo mật bằng pass";
                     }
-                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString() 
+                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString()
                         ,status, item.First_cluster.ToString()
                     };
                     var listViewItem = new ListViewItem(row);
@@ -167,7 +172,7 @@ namespace EMXFileManagement
             //  MessageBox.Show(fullpath);
         }
 
-      
+
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -201,7 +206,7 @@ namespace EMXFileManagement
         private void xoáToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DataComponent _current = root;
-            
+
             DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá?", "Xoá", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
@@ -216,10 +221,10 @@ namespace EMXFileManagement
                         MessageBox.Show("Mật khẩu sai");
                         return;
                     }
-                  
+
                 }
                 _current.Remove(disk);
-             
+
                 MessageBox.Show("Xoá file thành công");
                 this.load();
 
@@ -241,7 +246,8 @@ namespace EMXFileManagement
                 _current = GetCurrentSelectedListView();
 
 
-                if (_current is FileModel) { 
+                if (_current is FileModel)
+                {
                     if (_current.HasPassword())
                     {
                         string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
@@ -345,7 +351,7 @@ namespace EMXFileManagement
         {
             if (disk.IsOpened)
             {
-                disk.CloseStream();   
+                disk.CloseStream();
             }
 
             if (System.IO.File.Exists("disk.dat"))
@@ -367,9 +373,9 @@ namespace EMXFileManagement
             {
                 disk.OpenStream();
                 disk.ReadFatCache();
-                
+
             }
-            
+
 
 
             FileManagement fm = new FileManagement(disk);
@@ -384,7 +390,7 @@ namespace EMXFileManagement
             List<byte> rdata1 = Enumerable.Repeat((byte)0x61, 4097).ToList();
             rfile1._data = rdata1;
 
-         
+
             FileModel rfile2 = new FileModel()
             {
                 FileName = "rfile2",
@@ -398,11 +404,11 @@ namespace EMXFileManagement
             FolderModel root = new FolderModel();
             fm.AddNewFile(root, rfile1);
             //fm.AddNewFile(root, rfile2);
-            
+
 
             // Add folder con and cfile1.pdf
 
-            FolderModel con =  fm.CreateFolder(root, "TMCon", "");
+            FolderModel con = fm.CreateFolder(root, "TMCon", "");
             FileModel cfile1 = new FileModel()
             {
                 FileName = "cfile1",
@@ -414,7 +420,7 @@ namespace EMXFileManagement
             fm.AddNewFile(con, cfile1);
 
 
-           
+
             // List<DataComponent> root_inside = fm.GetAllInsideFolder(root);
             root.PrintPretty(" ", true);
         }
@@ -439,11 +445,17 @@ namespace EMXFileManagement
 
         private void nhậpFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (current_selected != null && !(current_selected is FolderModel))
+            {
+                MessageBox.Show("Vui lòng chọn 1 thư mục từ treeview");
+                return;
+            }
+
             //DataComponent _current = GetCurrentSelectedListView();
             string filePath = "";
             string fileContent = "";
             string fileName = "";
-            
+
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -467,13 +479,68 @@ namespace EMXFileManagement
                     List<byte> data = fileOrigin.ToList();
                     file._data = data;
 
-                    fileManagement.AddNewFile(root, file);
+                    fileManagement.AddNewFile((FolderModel)current_selected, file);
                     MessageBox.Show($"Thêm file thành công{fileName}.{fileContent}");
 
                     load();
                 }
             }
-      
+
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("Mở thùng rác");
+
+        }
+
+        public string ShowProperty()
+        {
+            ucPropertyFrm ucPropertyFrm = new ucPropertyFrm();
+            ucPropertyFrm.Root = root;
+            ucPropertyFrm.Model = GetCurrentSelectedListView();
+            ucPropertyFrm.LocationPath = current_location;
+            ucPropertyFrm.Dock = DockStyle.Top;
+            ucPropertyFrm.Init();
+            Form prompt = new Form()
+            {
+                Width = ucPropertyFrm.Width + 10,
+                Height = ucPropertyFrm.Height + 100,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "Property",
+                StartPosition = FormStartPosition.CenterScreen
+            };
+
+            Button confirmation = new Button() { Text = "Ok", Left = ucPropertyFrm.Width - 220, Width = 100, Top = ucPropertyFrm.Height, DialogResult = DialogResult.OK };
+            Button cancel = new Button() { Text = "Cancel", Left = ucPropertyFrm.Width - 110, Width = 100, Top = ucPropertyFrm.Height, DialogResult = DialogResult.Cancel };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            cancel.Click += (sender, e) =>
+            {
+                prompt.Close();
+            };
+            prompt.AcceptButton = confirmation;
+            prompt.CancelButton = cancel;
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(cancel);
+            prompt.Controls.Add(ucPropertyFrm);
+            DialogResult rsltDlg = prompt.ShowDialog(); 
+            if (rsltDlg == DialogResult.Cancel)
+            {
+                return "";
+                //handle Cancel
+            }
+            else if(rsltDlg == DialogResult.OK)
+            {
+                //MessageBox.Show(ucPropertyFrm.FileName); 
+
+            }
+            return "";
+        }
+
+        private void thuộcTínhToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent listview_selected_item = GetCurrentSelectedListView();
+            ShowProperty();
         }
     }
 }
