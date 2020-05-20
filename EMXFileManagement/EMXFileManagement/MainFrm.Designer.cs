@@ -64,21 +64,21 @@
             this.btnRefresh = new System.Windows.Forms.Button();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.nhậpFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkFlagHiddenShow = new System.Windows.Forms.CheckBox();
-            this.txtSearchFileName = new System.Windows.Forms.TextBox();
-            this.btnSearch = new System.Windows.Forms.Button();
             this.dạngViewToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.detailToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.smallIconToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.largeIconToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.listToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtSearchFileName = new System.Windows.Forms.TextBox();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.checkFlagHiddenShow = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -88,12 +88,13 @@
             // 
             // treeView1
             // 
+            this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.treeView1.ImageIndex = 0;
             this.treeView1.ImageList = this.imageList1;
-            this.treeView1.Location = new System.Drawing.Point(0, 87);
+            this.treeView1.Location = new System.Drawing.Point(0, 117);
             this.treeView1.Name = "treeView1";
             this.treeView1.SelectedImageIndex = 0;
-            this.treeView1.Size = new System.Drawing.Size(259, 422);
+            this.treeView1.Size = new System.Drawing.Size(300, 422);
             this.treeView1.TabIndex = 0;
             // 
             // imageList1
@@ -113,12 +114,13 @@
             this.columnHeader4,
             this.columnHeader5,
             this.columnHeader6});
+            this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listView1.FullRowSelect = true;
             this.listView1.HideSelection = false;
             this.listView1.LargeImageList = this.imageList1;
-            this.listView1.Location = new System.Drawing.Point(277, 91);
+            this.listView1.Location = new System.Drawing.Point(330, 91);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1008, 498);
+            this.listView1.Size = new System.Drawing.Size(1047, 539);
             this.listView1.SmallImageList = this.imageList1;
             this.listView1.StateImageList = this.imageList1;
             this.listView1.TabIndex = 1;
@@ -157,7 +159,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1316, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1389, 28);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -334,7 +336,7 @@
             // btnRefresh
             // 
             this.btnRefresh.Image = ((System.Drawing.Image)(resources.GetObject("btnRefresh.Image")));
-            this.btnRefresh.Location = new System.Drawing.Point(194, 21);
+            this.btnRefresh.Location = new System.Drawing.Point(330, 39);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(59, 46);
             this.btnRefresh.TabIndex = 5;
@@ -359,6 +361,53 @@
             this.nhậpFileToolStripMenuItem.Text = "Nhập file";
             this.nhậpFileToolStripMenuItem.Click += new System.EventHandler(this.nhậpFileToolStripMenuItem_Click);
             // 
+            // dạngViewToolStripMenuItem1
+            // 
+            this.dạngViewToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.detailToolStripMenuItem1,
+            this.smallIconToolStripMenuItem1,
+            this.largeIconToolStripMenuItem1,
+            this.listToolStripMenuItem1,
+            this.tileToolStripMenuItem});
+            this.dạngViewToolStripMenuItem1.Name = "dạngViewToolStripMenuItem1";
+            this.dạngViewToolStripMenuItem1.Size = new System.Drawing.Size(150, 24);
+            this.dạngViewToolStripMenuItem1.Text = "Dạng View";
+            // 
+            // detailToolStripMenuItem1
+            // 
+            this.detailToolStripMenuItem1.Name = "detailToolStripMenuItem1";
+            this.detailToolStripMenuItem1.Size = new System.Drawing.Size(161, 26);
+            this.detailToolStripMenuItem1.Text = "Detail";
+            this.detailToolStripMenuItem1.Click += new System.EventHandler(this.detailToolStripMenuItem_Click);
+            // 
+            // smallIconToolStripMenuItem1
+            // 
+            this.smallIconToolStripMenuItem1.Name = "smallIconToolStripMenuItem1";
+            this.smallIconToolStripMenuItem1.Size = new System.Drawing.Size(161, 26);
+            this.smallIconToolStripMenuItem1.Text = "Small Icon";
+            this.smallIconToolStripMenuItem1.Click += new System.EventHandler(this.smallIconToolStripMenuItem_Click);
+            // 
+            // largeIconToolStripMenuItem1
+            // 
+            this.largeIconToolStripMenuItem1.Name = "largeIconToolStripMenuItem1";
+            this.largeIconToolStripMenuItem1.Size = new System.Drawing.Size(161, 26);
+            this.largeIconToolStripMenuItem1.Text = "Large Icon";
+            this.largeIconToolStripMenuItem1.Click += new System.EventHandler(this.largeIconToolStripMenuItem_Click);
+            // 
+            // listToolStripMenuItem1
+            // 
+            this.listToolStripMenuItem1.Name = "listToolStripMenuItem1";
+            this.listToolStripMenuItem1.Size = new System.Drawing.Size(161, 26);
+            this.listToolStripMenuItem1.Text = "List";
+            this.listToolStripMenuItem1.Click += new System.EventHandler(this.listToolStripMenuItem_Click);
+            // 
+            // tileToolStripMenuItem
+            // 
+            this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(161, 26);
+            this.tileToolStripMenuItem.Text = "Tile";
+            this.tileToolStripMenuItem.Click += new System.EventHandler(this.titleToolStripMenuItem_Click);
+            // 
             // toolStrip1
             // 
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(40, 40);
@@ -369,7 +418,7 @@
             this.toolStripButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 28);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1316, 47);
+            this.toolStrip1.Size = new System.Drawing.Size(1389, 47);
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -412,32 +461,21 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkFlagHiddenShow);
             this.groupBox1.Controls.Add(this.treeView1);
-            this.groupBox1.Controls.Add(this.btnRefresh);
-            this.groupBox1.Location = new System.Drawing.Point(12, 90);
+            this.groupBox1.Controls.Add(this.txtSearchFileName);
+            this.groupBox1.Controls.Add(this.btnSearch);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Location = new System.Drawing.Point(12, 91);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(259, 499);
+            this.groupBox1.Size = new System.Drawing.Size(300, 539);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Cấu trúc thư mục";
             // 
-            // checkFlagHiddenShow
-            // 
-            this.checkFlagHiddenShow.AutoSize = true;
-            this.checkFlagHiddenShow.Checked = true;
-            this.checkFlagHiddenShow.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkFlagHiddenShow.Location = new System.Drawing.Point(24, 33);
-            this.checkFlagHiddenShow.Name = "checkFlagHiddenShow";
-            this.checkFlagHiddenShow.Size = new System.Drawing.Size(121, 21);
-            this.checkFlagHiddenShow.TabIndex = 6;
-            this.checkFlagHiddenShow.Text = "Hiện file đã ẩn";
-            this.checkFlagHiddenShow.UseVisualStyleBackColor = true;
-            // 
             // txtSearchFileName
             // 
             this.txtSearchFileName.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSearchFileName.Location = new System.Drawing.Point(960, 21);
+            this.txtSearchFileName.Location = new System.Drawing.Point(6, 44);
             this.txtSearchFileName.Name = "txtSearchFileName";
             this.txtSearchFileName.Size = new System.Drawing.Size(222, 45);
             this.txtSearchFileName.TabIndex = 8;
@@ -445,66 +483,32 @@
             // btnSearch
             // 
             this.btnSearch.Image = ((System.Drawing.Image)(resources.GetObject("btnSearch.Image")));
-            this.btnSearch.Location = new System.Drawing.Point(1188, 20);
+            this.btnSearch.Location = new System.Drawing.Point(234, 44);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(45, 46);
             this.btnSearch.TabIndex = 9;
             this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
-            // dạngViewToolStripMenuItem1
+            // checkFlagHiddenShow
             // 
-            this.dạngViewToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.detailToolStripMenuItem1,
-            this.smallIconToolStripMenuItem1,
-            this.largeIconToolStripMenuItem1,
-            this.listToolStripMenuItem1,
-            this.tileToolStripMenuItem});
-            this.dạngViewToolStripMenuItem1.Name = "dạngViewToolStripMenuItem1";
-            this.dạngViewToolStripMenuItem1.Size = new System.Drawing.Size(150, 24);
-            this.dạngViewToolStripMenuItem1.Text = "Dạng View";
-            // 
-            // detailToolStripMenuItem1
-            // 
-            this.detailToolStripMenuItem1.Name = "detailToolStripMenuItem1";
-            this.detailToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
-            this.detailToolStripMenuItem1.Text = "Detail";
-            this.detailToolStripMenuItem1.Click += new System.EventHandler(this.detailToolStripMenuItem_Click);
-            // 
-            // smallIconToolStripMenuItem1
-            // 
-            this.smallIconToolStripMenuItem1.Name = "smallIconToolStripMenuItem1";
-            this.smallIconToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
-            this.smallIconToolStripMenuItem1.Text = "Small Icon";
-            this.smallIconToolStripMenuItem1.Click += new System.EventHandler(this.smallIconToolStripMenuItem_Click);
-            // 
-            // largeIconToolStripMenuItem1
-            // 
-            this.largeIconToolStripMenuItem1.Name = "largeIconToolStripMenuItem1";
-            this.largeIconToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
-            this.largeIconToolStripMenuItem1.Text = "Large Icon";
-            this.largeIconToolStripMenuItem1.Click += new System.EventHandler(this.largeIconToolStripMenuItem_Click);
-            // 
-            // listToolStripMenuItem1
-            // 
-            this.listToolStripMenuItem1.Name = "listToolStripMenuItem1";
-            this.listToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
-            this.listToolStripMenuItem1.Text = "List";
-            this.listToolStripMenuItem1.Click += new System.EventHandler(this.listToolStripMenuItem_Click);
-            // 
-            // tileToolStripMenuItem
-            // 
-            this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.tileToolStripMenuItem.Text = "Tile";
-            this.tileToolStripMenuItem.Click += new System.EventHandler(this.titleToolStripMenuItem_Click);
+            this.checkFlagHiddenShow.AutoSize = true;
+            this.checkFlagHiddenShow.Checked = true;
+            this.checkFlagHiddenShow.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkFlagHiddenShow.Location = new System.Drawing.Point(406, 54);
+            this.checkFlagHiddenShow.Name = "checkFlagHiddenShow";
+            this.checkFlagHiddenShow.Size = new System.Drawing.Size(121, 21);
+            this.checkFlagHiddenShow.TabIndex = 6;
+            this.checkFlagHiddenShow.Text = "Hiện file đã ẩn";
+            this.checkFlagHiddenShow.UseVisualStyleBackColor = true;
             // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1316, 624);
-            this.Controls.Add(this.btnSearch);
-            this.Controls.Add(this.txtSearchFileName);
+            this.ClientSize = new System.Drawing.Size(1389, 650);
+            this.Controls.Add(this.checkFlagHiddenShow);
+            this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.listView1);
