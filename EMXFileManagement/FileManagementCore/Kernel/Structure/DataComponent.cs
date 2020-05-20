@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -279,6 +281,21 @@ namespace FileManagementCore.Kernel.Structure
 
         //remove folder 
         //composite pattern
+
+        public virtual void SetPassword(DiskManagement disk , string pass)
+        {
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
+
+            this.Password = OOHashHelper.getString(pass);
+            SRDETEntry entry = this.GetEntry();
+            disk.UpdateEntry(entry, parent_cluster);
+        }
+
         public virtual void Remove(DiskManagement disk)
         {
             int parent_cluster = this.parent_cluster;
