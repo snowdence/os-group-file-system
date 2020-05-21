@@ -14,6 +14,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMXFileManagementCLI", "EMX
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMXFileManagementTest", "EMXFileManagementTest\EMXFileManagementTest.csproj", "{E8174105-EEF4-4E5A-8E5F-44D0A5106B27}"
+	ProjectSection(ProjectDependencies) = postProject
+		{44FAA08C-7E14-47BA-9B72-F2B761B373D7} = {44FAA08C-7E14-47BA-9B72-F2B761B373D7}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManagementCore", "FileManagementCore\FileManagementCore.csproj", "{44FAA08C-7E14-47BA-9B72-F2B761B373D7}"
 EndProject

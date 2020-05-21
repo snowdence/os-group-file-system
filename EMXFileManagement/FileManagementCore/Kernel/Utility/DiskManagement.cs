@@ -18,11 +18,13 @@ namespace FileManagementCore.Kernel.Utility
     public class DiskManagement
     {
         int cluster_size_in_bytes = 4096;  //8 sector, 512 per sector
+        int boot_system_offset = 512;
         int boot_sector_size = 3282 * 512;
         int fat1_pos = 3282 * 512; //1680384
         int fat2_pos = 18025 * 512; //9228800   
         int rdet_pos = 32768 * 512; // 16777216
         int data_pos = (32768 + 8) * 512; //16781312
+
         int EOF = 268435455;
         private FileStream _file_stream;
         private SFileAllocationTable _fat_cache;
@@ -43,8 +45,8 @@ namespace FileManagementCore.Kernel.Utility
         public void OpenStream(string path_disk = "disk.dat")
         {
             _file_stream = new FileStream(path_disk, FileMode.OpenOrCreate);
-           // this.ReadFatCache();
-            this._volumn_opened = true; 
+            // this.ReadFatCache();
+            this._volumn_opened = true;
         }
         /// <summary>
         /// Đóng file chứa volumn, tránh việc crash 
@@ -69,13 +71,27 @@ namespace FileManagementCore.Kernel.Utility
             }
         }
 
-        #region CREATE_vOLUMN
+
+        public SBootSystem GetBootSystemData()
+        {
+            _file_stream.Seek(boot_system_offset, SeekOrigin.Begin);
+            SBootSystem boot_system = (SBootSystem)FileIOHelper.Read(_file_stream, typeof(SBootSystem));
+            return boot_system;
+        }
+        public bool IsSecure()
+        {
+            SBootSystem boot_system_data = this.GetBootSystemData();
+            return boot_system_data.FLAG_SECURE_UNIQUE == 0x01;
+        }
+        
+
+        #region CREATE_VOLUMN
         /// <summary>
         /// Tạo vùng boot sector
         /// </summary>
         /// <param name="total_sector"></param>
         /// <param name="sector_per_fat"></param>
-        public void CreateBootSector(int total_sector = 15128576, int sector_per_fat = 14743)
+        public void CreateBootSector(string unique = "", string user = "", string pass = "", string hash = "", int total_sector = 15128576, int sector_per_fat = 14743)
         {
             SBootSector sb = new SBootSector();
             sb.jmp = new byte[] { 0x00, 0, 0 };
@@ -114,6 +130,19 @@ namespace FileManagementCore.Kernel.Utility
             sb.SIGNATURE = new byte[2] { 0x55, 0xAA };
             //short num = BitConverter.ToInt16(sb.BIOS_PARAM.BYTE_PER_SECTOR, 0);
             SBootSystem bootSystem = new SBootSystem();
+            if (string.IsNullOrWhiteSpace(unique))
+            {
+                bootSystem.FLAG_SECURE_UNIQUE = 0x00;
+            }
+            else
+            {
+                bootSystem.FLAG_SECURE_UNIQUE = 0x01; //secure
+                bootSystem.UNIQUE_ID = unique;
+                bootSystem.VOL_USER = user;
+                bootSystem.VOL_PASS = pass;
+                bootSystem.VOL_HASH_REVERSE = hash;
+            }
+
 
             _file_stream.Seek(0, SeekOrigin.Begin);
             FileIOHelper.Write(_file_stream, sb);
@@ -122,6 +151,9 @@ namespace FileManagementCore.Kernel.Utility
             Console.WriteLine("Write Bootsector .... 3282 sector {0} bytes", 3282 * 512);
 
         }
+
+
+
         /// <summary>
         /// TẠo vùng FAT
         /// </summary>
@@ -166,11 +198,11 @@ namespace FileManagementCore.Kernel.Utility
         /// <summary>
         /// Tạo volumn sẽ tạo  3 vùng Bootsector , FAT, RDET
         /// </summary>
-        public void CreateVolumn()
+        public void CreateVolumn(string unique = "", string user = "", string pass = "", string hash = "")
         {
             int size_mb = 7387; //megabytes
 
-            CreateBootSector(); //3282
+            CreateBootSector(unique, user, pass, hash); //3282
 
             CreateFAT(); //32768
 
@@ -279,7 +311,8 @@ namespace FileManagementCore.Kernel.Utility
         /// <returns>SRDET struct</returns>
         public SRDET ReadRDETCache(int cluster = 2)
         {
-            if (IsOpened) { 
+            if (IsOpened)
+            {
                 _file_stream.Seek(CalcMoveOffsetClusterPointerStream(cluster), SeekOrigin.Begin);
                 _rdet_cache = (SRDET)FileIOHelper.Read(_file_stream, typeof(SRDET));
                 _rdetTable = new RDET(_rdet_cache);
@@ -521,7 +554,7 @@ namespace FileManagementCore.Kernel.Utility
         }
 
 
- 
+
 
 
     }

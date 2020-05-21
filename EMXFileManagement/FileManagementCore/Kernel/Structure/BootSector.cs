@@ -91,14 +91,21 @@ namespace FileManagementCore.Kernel.Structure
         public byte[] SIGNATURE; //AA 55
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 3281*512)]
-    struct SBootSystem
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 3281 * 512)]
+    public struct SBootSystem
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3281*512)]
+        public byte FLAG_SECURE_UNIQUE; //80 
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string UNIQUE_ID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string VOL_USER;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string VOL_PASS;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 127)]
+        public string VOL_HASH_REVERSE;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3280 * 512)]
         public byte[] data;
     }
-
-
     public class BootSector
     {
 
@@ -171,7 +178,7 @@ namespace FileManagementCore.Kernel.Structure
                 Write(fileStream, fat1);
                 Write(fileStream, fat1);
                 //fileStream.Seek(0, SeekOrigin.Begin);
-                
+
                 // SBootSector test2 = (SBootSector)Read(fileStream, typeof(SBootSector));
 
                 //Console.WriteLine("Name: {0}", test2.EXTENDED_BIOS_PARAM.VOLUMN_NAME);

@@ -253,6 +253,7 @@ namespace EMXFileManagement
                     }
 
                 }
+                
                 _current.Remove(disk);
 
                 MessageBox.Show("Xoá file thành công");
@@ -495,7 +496,6 @@ namespace EMXFileManagement
 
 
             // Add folder con and cfile1.pdf
-
             FolderModel con = fm.CreateFolder(root, "TMCon", "");
 
 
