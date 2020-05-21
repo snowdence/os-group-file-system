@@ -310,6 +310,33 @@ namespace FileManagementCore.Kernel.Structure
             disk.UpdateEntry(entry, parent_cluster);
         }
         
+        public virtual void RemovePermanently(DiskManagement disk)
+        {
+            uint eof = BitConverter.ToUInt32(new byte[] { 0xFF, 0xFF, 0xFF, 0x0F }, 0);
+
+            int first_cluster = this.First_cluster;
+            List<uint> clusters = new List<uint>();
+            uint next_cluster = (uint)first_cluster;
+
+            do {
+                clusters.Add(next_cluster);
+                next_cluster = disk.ReadFatEntry((int)next_cluster);
+            } while (next_cluster != eof);
+
+            clusters.ForEach(delegate (uint cluster)
+            {
+                disk.WriteNULLfat((int)cluster);
+            });
+
+            SRDETEntry entry = this.GetEntry();
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
+            disk.RemoveEntry(entry, parent_cluster);
+        }
 
 
         public virtual void Recover(DiskManagement disk)
