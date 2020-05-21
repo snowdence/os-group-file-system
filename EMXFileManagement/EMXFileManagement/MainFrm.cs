@@ -1,4 +1,6 @@
-﻿using FileManagementCore.Kernel.Structure;
+﻿using EMXFileManagement.Module;
+using FileManagementCore.Helper;
+using FileManagementCore.Kernel.Structure;
 using FileManagementCore.Kernel.Utility;
 using System;
 using System.Collections.Generic;
@@ -21,17 +23,30 @@ namespace EMXFileManagement
 
         FileManagement fileManagement;
         FolderModel root;
+
         public string current_location = "";
         public DataComponent current_selected;
+        bool recycle_bin = false;
         public MainFrm()
         {
             InitializeComponent();
 
             treeView1.AfterSelect += TreeView1_AfterSelect;
             listView1.MouseClick += listView1_MouseClick;
-            
-
+            listView1.MouseDown += ListView1_MouseDown;
         }
+        
+        private void ListView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (listView1.GetItemAt(e.X, e.Y) == null)
+                {
+                    contextMenuStrip2.Show(Cursor.Position);
+                }
+            }
+        }
+
         private void openDiskToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Nếu disk đang mở thì đóng lại trước tránh 2 class đọc 1 file sẽ crash
@@ -39,10 +54,10 @@ namespace EMXFileManagement
             {
                 disk.OpenStream();//mở file disk
             }
-            
+
             //đọc fat vào cache (biến trong disk management)
             disk.ReadFatCache();
-            
+
             //quản lý file
             fileManagement = new FileManagement(disk);
             //Tạo folder root mặc định cluster 2 
@@ -57,18 +72,23 @@ namespace EMXFileManagement
         /// </summary>
         void load()
         {
+            recycle_bin = false;
             List<DataComponent> dataComponents = root.GetAllInside();
             root.PrintPretty(" ", true);
             Console.WriteLine(" \n\n\n");
             //Xây dựng cây thư mục từ root
-            TreeNode tre = root.GetTreeNode();
+
+
+            TreeNode tre = root.GetTreeNode(checkFlagHiddenShow.Checked);
 
             //xoá tạm các node cũ  (trường hợp f5 lại thì xoá dữ liệu cũ)
             listView1.Items.Clear();
 
             treeView1.Nodes.Clear();
             treeView1.Nodes.Add(tre);
+            treeView1.SelectedNode = tre;
             treeView1.ExpandAll();
+
 
         }
 
@@ -81,6 +101,10 @@ namespace EMXFileManagement
                     //Hiển thị menu chuột phải khi chọn 1 phần tử listview
                     contextMenuStrip1.Show(Cursor.Position);
                 }
+                else
+                {
+                    contextMenuStrip2.Show(Cursor.Position);
+                }
             }
         }
         //fix subfolder  size
@@ -88,6 +112,7 @@ namespace EMXFileManagement
         //Sự kiện khi chọn 1 phần tử trong treeview
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            current_selected = root;
             listView1.Items.Clear();
             DataComponent _current = root;
             TreeNode CurrentNode = e.Node;
@@ -111,19 +136,42 @@ namespace EMXFileManagement
                 }
             }
 
+
             //Đã tìm được thư mục hoặc file vừa chọn trong treeview
             current_selected = _current;
-            
+
 
             //nếu current là FolderModel. Do sử dụng composite pattern nên cần check
             if (_current is FolderModel)
             {
+                if (_current.HasPassword())
+                {
+                    string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
 
-                List<DataComponent> list = ((FolderModel)_current).GetAllInside();
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
+                    {
+                        MessageBox.Show("Mật khẩu sai");
+                        return;
+                    }
+                }
+                List<DataComponent> list = new List<DataComponent>();
+
+                if (recycle_bin)
+                {
+                    list = ((FolderModel)_current).GetAllInsideRecycleBin();
+                }
+                else
+                {
+                    list = ((FolderModel)_current).GetAllInside();
+                }
+
+
                 foreach (DataComponent item in list)
                 {
-                    if (item.IsDeleted && !checkFlagDeletedShow.Checked)
+                    if (item.IsHidden && checkFlagHiddenShow.Checked == false)
+                    {
                         continue;
+                    }
                     string status = "";
                     if (item.IsDeleted)
                     {
@@ -141,10 +189,12 @@ namespace EMXFileManagement
                     {
                         status += "Đã bảo mật bằng pass";
                     }
-                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString() 
+                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString()
                         ,status, item.First_cluster.ToString()
                     };
                     var listViewItem = new ListViewItem(row);
+                    listViewItem.ImageIndex = (item is FolderModel) ? 0 : 1;
+
                     //thêm row vào listview
                     listView1.Items.Add(listViewItem);
                 }
@@ -152,7 +202,7 @@ namespace EMXFileManagement
             //  MessageBox.Show(fullpath);
         }
 
-      
+
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -172,6 +222,8 @@ namespace EMXFileManagement
             };
             Label textLabel = new Label() { Left = 50, Top = 20, Text = text };
             TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
+            textBox.UseSystemPasswordChar = true;
+
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70, DialogResult = DialogResult.OK };
             confirmation.Click += (sender, e) => { prompt.Close(); };
             prompt.Controls.Add(textBox);
@@ -184,33 +236,25 @@ namespace EMXFileManagement
         private void xoáToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DataComponent _current = root;
-            var selected = listView1.SelectedItems[0];
-            
+
             DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá?", "Xoá", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 //do something
-                string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
+                _current = GetCurrentSelectedListView();
 
-                string[] parse_path = full_path_file.Split('\\');
-                if (parse_path.Length > 1)
-                {
-                    for (int i = 1; i < parse_path.Length; i++)
-                    {
-                        _current = _current.SearchComponent(parse_path[i]);
-                    }
-                }
                 if (_current.HasPassword())
                 {
                     string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
-                    if (promptValue != _current.Password)
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
                     {
                         MessageBox.Show("Mật khẩu sai");
                         return;
                     }
-                  
+
                 }
                 _current.Remove(disk);
+
                 MessageBox.Show("Xoá file thành công");
                 this.load();
 
@@ -226,27 +270,18 @@ namespace EMXFileManagement
         {
 
             DataComponent _current = root;
-            var selected = listView1.SelectedItems[0];
             DialogResult dialogResult = MessageBox.Show("Bạn có muốn xuất file", "Xuất file", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                //do something
-                string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
+                _current = GetCurrentSelectedListView();
 
-                string[] parse_path = full_path_file.Split('\\');
-                if (parse_path.Length > 1)
+
+                if (_current is FileModel)
                 {
-                    for (int i = 1; i < parse_path.Length; i++)
-                    {
-                        _current = _current.SearchComponent(parse_path[i]);
-                    }
-                }
-
-                if(_current is FileModel) { 
                     if (_current.HasPassword())
                     {
                         string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
-                        if (promptValue != _current.Password)
+                        if (OOHashHelper.getString(promptValue) != _current.Password)
                         {
                             MessageBox.Show("Mật khẩu sai");
                             return;
@@ -282,32 +317,101 @@ namespace EMXFileManagement
 
         private void đặtPasswordToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DataComponent _current = root;
+            _current = GetCurrentSelectedListView();
+            if (_current.Password != "")
+            {
+                //khong co pass
+                string oldPass = ShowDialog("Nhập pass cũ", "Mật khẩu");
+                if (OOHashHelper.getString(oldPass) != _current.Password)
+                {
+                    MessageBox.Show("Bạn đã nhập sai pass cũ");
+                    return;
+                }
+
+            }
+
+
+            string newPass = ShowDialog("Nhập pass mới", "Mật khẩu");
+            string reNewPass = ShowDialog("Nhập lại pass mới", "Mật khẩu");
+            if (newPass != reNewPass)
+            {
+                MessageBox.Show("Bạn đã nhập xác nhận pass mới sai");
+                return;
+            }
+            _current.SetPassword(disk, newPass);
+            MessageBox.Show("Đặt mật khẩu thành công");
+
+
 
         }
-
-        private void phụcHồiToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ẩnFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DataComponent _current = root;
-            var selected = listView1.SelectedItems[0];
-            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn phục hồi?", "Phục hồi", MessageBoxButtons.YesNo);
+
+            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn ẩn file?", "Ẩn file", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 //do something
-                string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
-
-                string[] parse_path = full_path_file.Split('\\');
-                if (parse_path.Length > 1)
-                {
-                    for (int i = 1; i < parse_path.Length; i++)
-                    {
-                        _current = _current.SearchComponent(parse_path[i]);
-                    }
-                }
+                _current = GetCurrentSelectedListView();
 
                 if (_current.HasPassword())
                 {
                     string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
-                    if (promptValue != _current.Password)
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
+                    {
+                        MessageBox.Show("Mật khẩu sai");
+                        return;
+                    }
+
+                }
+                _current.Hide(disk);
+
+                MessageBox.Show("Ẩn file thành công");
+                this.load();
+
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                //do something else
+            }
+
+        }
+
+        /// <summary>
+        /// Chọn file hoặc folder dựa vào mục đã chọn trong treeview
+        /// </summary>
+        /// <returns>Trả về đối tượng tới file hoặc folder đã chọn </returns>
+        public DataComponent GetCurrentSelectedListView()
+        {
+            DataComponent _current = root;
+            var selected = listView1.SelectedItems[0];
+            string full_path_file = current_location + "\\" + selected.SubItems[0].Text.ToString();
+
+            string[] parse_path = full_path_file.Split('\\');
+            if (parse_path.Length > 1)
+            {
+                for (int i = 1; i < parse_path.Length; i++)
+                {
+                    _current = _current.SearchComponent(parse_path[i]);
+                }
+            }
+            return _current;
+
+        }
+        private void phụcHồiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent _current = root;
+
+            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn phục hồi?", "Phục hồi", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                //do something
+                _current = GetCurrentSelectedListView();
+                if (_current.HasPassword())
+                {
+                    string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
                     {
                         MessageBox.Show("Mật khẩu sai");
                         return;
@@ -335,7 +439,7 @@ namespace EMXFileManagement
         {
             if (disk.IsOpened)
             {
-                disk.CloseStream();   
+                disk.CloseStream();
             }
 
             if (System.IO.File.Exists("disk.dat"))
@@ -357,9 +461,9 @@ namespace EMXFileManagement
             {
                 disk.OpenStream();
                 disk.ReadFatCache();
-                
+
             }
-            
+
 
 
             FileManagement fm = new FileManagement(disk);
@@ -374,7 +478,7 @@ namespace EMXFileManagement
             List<byte> rdata1 = Enumerable.Repeat((byte)0x61, 4097).ToList();
             rfile1._data = rdata1;
 
-         
+
             FileModel rfile2 = new FileModel()
             {
                 FileName = "rfile2",
@@ -388,24 +492,36 @@ namespace EMXFileManagement
             FolderModel root = new FolderModel();
             fm.AddNewFile(root, rfile1);
             //fm.AddNewFile(root, rfile2);
-            
+
 
             // Add folder con and cfile1.pdf
 
-            FolderModel con =  fm.CreateFolder(root, "TMCon", "");
+            FolderModel con = fm.CreateFolder(root, "TMCon", "");
+
+
+
             FileModel cfile1 = new FileModel()
             {
                 FileName = "cfile1",
                 FileExt = "pdf",
-                Password = "pass"
+                Password = OOHashHelper.getString("pass")
             };
             List<byte> cdata1 = Enumerable.Repeat((byte)0x45, 8270).ToList();
             cfile1._data = cdata1;
             fm.AddNewFile(con, cfile1);
 
+            FolderModel con_cua_con = fm.CreateFolder(con, "ConcuaCon", "");
 
-           
-            // List<DataComponent> root_inside = fm.GetAllInsideFolder(root);
+            FileModel cFileCon1 = new FileModel()
+            {
+                FileName = "cFileCon1",
+                FileExt = "exe",
+                Password = OOHashHelper.getString("")
+            };
+            List<byte> cdatacon1 = Enumerable.Repeat((byte)0x49, 9999).ToList();
+            cFileCon1._data = cdatacon1;
+            fm.AddNewFile(con_cua_con, cFileCon1);
+
             root.PrintPretty(" ", true);
         }
 
@@ -421,8 +537,229 @@ namespace EMXFileManagement
             fileManagement = new FileManagement(disk);
             root = new FolderModel();
             root._core_disk = disk;
-
             load();
+        }
+
+
+        /// <summary>
+        /// Nhập file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void nhậpFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (current_selected != null && !(current_selected is FolderModel))
+            {
+                MessageBox.Show("Vui lòng chọn 1 thư mục từ treeview");
+                return;
+            }
+
+            //DataComponent _current = GetCurrentSelectedListView();
+            string filePath = "";
+            string fileContent = "";
+            string fileName = "";
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+                    fileName = Path.GetFileNameWithoutExtension(filePath);
+                    fileContent = Path.GetExtension(filePath);
+
+                    FileModel file = new FileModel()
+                    {
+                        FileName = fileName,
+                        FileExt = fileContent,
+                        Created_datetime = DateTime.Now,
+                        Last_access_date = DateTime.Now,
+                        Modified_date = DateTime.Now,
+                        Password = "",
+                    };
+
+                    byte[] fileOrigin = File.ReadAllBytes(filePath);
+                    List<byte> data = fileOrigin.ToList();
+                    file._data = data;
+
+                    fileManagement.AddNewFile((FolderModel)current_selected, file);
+                    MessageBox.Show($"Thêm file thành công{fileName}.{fileContent}");
+
+                    load();
+                }
+            }
+
+        }
+
+
+        /// <summary>
+        /// toolstrip mở thùng rác
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            recycle_bin = true;
+            Console.WriteLine("Mở thùng rác");
+
+            if (!disk.IsOpened)
+            {
+                disk.OpenStream();
+            }
+            disk.ReadFatCache();
+            fileManagement = new FileManagement(disk);
+            root = new FolderModel();
+            root._core_disk = disk;
+
+            List<DataComponent> dataComponents = root.GetAllInsideRecycleBin();
+            root.PrintPretty(" ", true);
+            Console.WriteLine(" \n\n\n");
+            //Xây dựng cây thư mục từ root
+
+
+            TreeNode tre = root.GetRecycleBinNode();
+
+            //xoá tạm các node cũ  (trường hợp f5 lại thì xoá dữ liệu cũ)
+            listView1.Items.Clear();
+
+            treeView1.Nodes.Clear();
+            treeView1.Nodes.Add(tre);
+            treeView1.SelectedNode = tre;
+            treeView1.ExpandAll();
+
+
+        }
+
+        public string ShowProperty()
+        {
+            ucPropertyFrm ucPropertyFrm = new ucPropertyFrm();
+            ucPropertyFrm.Root = root;
+            ucPropertyFrm.Model = GetCurrentSelectedListView();
+            ucPropertyFrm.LocationPath = current_location;
+            ucPropertyFrm.Dock = DockStyle.Top;
+            ucPropertyFrm.Init();
+            Form prompt = new Form()
+            {
+                Width = ucPropertyFrm.Width + 10,
+                Height = ucPropertyFrm.Height + 100,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "Property",
+                StartPosition = FormStartPosition.CenterScreen
+            };
+
+            Button confirmation = new Button() { Text = "Ok", Left = ucPropertyFrm.Width - 220, Width = 100, Top = ucPropertyFrm.Height, DialogResult = DialogResult.OK };
+            Button cancel = new Button() { Text = "Cancel", Left = ucPropertyFrm.Width - 110, Width = 100, Top = ucPropertyFrm.Height, DialogResult = DialogResult.Cancel };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            cancel.Click += (sender, e) =>
+            {
+                prompt.Close();
+            };
+            prompt.AcceptButton = confirmation;
+            prompt.CancelButton = cancel;
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(cancel);
+            prompt.Controls.Add(ucPropertyFrm);
+            DialogResult rsltDlg = prompt.ShowDialog();
+            if (rsltDlg == DialogResult.Cancel)
+            {
+                return "";
+                //handle Cancel
+            }
+            else if (rsltDlg == DialogResult.OK)
+            {
+                //MessageBox.Show(ucPropertyFrm.FileName); 
+            }
+            return "";
+        }
+
+        private void thuộcTínhToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent listview_selected_item = GetCurrentSelectedListView();
+            ShowProperty();
+        }
+
+        private void detailToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.listView1.View = View.Details;
+        }
+
+        private void listToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.listView1.View = View.List;
+
+        }
+
+        private void smallIconToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.listView1.View = View.SmallIcon;
+
+        }
+
+        private void largeIconToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.listView1.View = View.LargeIcon;
+
+        }
+
+        private void titleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.listView1.View = View.Tile;
+
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+
+            string searchText = this.txtSearchFileName.Text;
+            if (String.IsNullOrEmpty(searchText))
+            {
+                return;
+            };
+
+
+            if (LastSearchText != searchText)
+            {
+                //It's a new Search
+                CurrentNodeMatches.Clear();
+                LastSearchText = searchText;
+                LastNodeIndex = 0;
+                SearchNodes(searchText, treeView1.Nodes[0]);
+            }
+
+            if (LastNodeIndex >= 0 && CurrentNodeMatches.Count > 0 && LastNodeIndex < CurrentNodeMatches.Count)
+            {
+                TreeNode selectedNode = CurrentNodeMatches[LastNodeIndex];
+                LastNodeIndex++;
+                this.treeView1.SelectedNode = selectedNode;
+                this.treeView1.SelectedNode.Expand();
+                this.treeView1.Select();
+            }
+        }
+
+
+        private List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
+
+        private int LastNodeIndex = 0;
+
+        private string LastSearchText;
+
+
+
+        private void SearchNodes(string SearchText, TreeNode StartNode)
+        {
+            TreeNode node = null;
+            while (StartNode != null)
+            {
+                if (StartNode.Text.ToLower().Contains(SearchText.ToLower()))
+                {
+                    CurrentNodeMatches.Add(StartNode);
+                };
+                if (StartNode.Nodes.Count != 0)
+                {
+                    SearchNodes(SearchText, StartNode.Nodes[0]);//Recursive Search 
+                };
+                StartNode = StartNode.NextNode;
+            };
 
         }
     }

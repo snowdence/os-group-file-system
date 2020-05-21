@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Helper\DateTimeHelper.cs" />
     <Compile Include="Helper\FileIOHelper.cs" />
+    <Compile Include="Helper\OOHashHelper.cs" />
     <Compile Include="Kernel\Enum.cs" />
     <Compile Include="Kernel\Structure\BootSector.cs" />
     <Compile Include="Kernel\Structure\Cluster.cs" />

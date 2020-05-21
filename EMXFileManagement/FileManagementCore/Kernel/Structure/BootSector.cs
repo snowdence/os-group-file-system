@@ -68,7 +68,6 @@ namespace FileManagementCore.Kernel.Structure
 
     }
 
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1, Size = 512)]
     public struct SBootSector
     {
@@ -97,7 +96,6 @@ namespace FileManagementCore.Kernel.Structure
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3281*512)]
         public byte[] data;
-
     }
 
 
