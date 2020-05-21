@@ -214,7 +214,11 @@ namespace EMXFileManagement
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show( "  - Nhóm OS bài tập 21 FileManagement Beta 0.0.1 \n\t - Trần Minh Đức \n\t - Nguyễn Vũ Thu Hiền \n\t - Lê Thanh Phương Thái", "Thông tin nhóm");
+            MessageBox.Show( "- Nhóm OS bài tập 21 FileManagement Beta 0.0.1 \n\t " +
+                "- 18127027 Trần Minh Đức  \n\t " +
+                "- 18127004 Nguyễn Vũ Thu Hiền \n\t " +
+                "- 18127027 Lê Thanh Phương Thái"
+                , "Thông tin nhóm");
         }
 
 
@@ -559,7 +563,11 @@ namespace EMXFileManagement
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-
+            if (!File.Exists("disk.dat"))
+            {
+                MessageBox.Show("Không tìm thấy file disk.dat vui lòng tạo mới bằng icon bên cạnh hoặc icon import từ 1 file disk có sẵn");
+                return;
+            }
             if (!disk.IsOpened)
             {
                 if (File.Exists("disk.dat"))
