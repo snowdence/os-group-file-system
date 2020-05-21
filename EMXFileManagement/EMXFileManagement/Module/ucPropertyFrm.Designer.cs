@@ -48,13 +48,14 @@
             this.txtName = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtNewRepass = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtNewPass = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.txtOldPass = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.txtNewPass = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtNewRepass = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -241,6 +242,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.button1);
             this.tabPage2.Controls.Add(this.label12);
             this.tabPage2.Controls.Add(this.txtNewRepass);
             this.tabPage2.Controls.Add(this.label10);
@@ -255,6 +257,47 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Security";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(139, 170);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(379, 17);
+            this.label12.TabIndex = 6;
+            this.label12.Text = "Nếu mật khẩu cũ không có thì để trống trường mật khẩu cũ";
+            // 
+            // txtNewRepass
+            // 
+            this.txtNewRepass.Location = new System.Drawing.Point(142, 125);
+            this.txtNewRepass.Name = "txtNewRepass";
+            this.txtNewRepass.Size = new System.Drawing.Size(326, 22);
+            this.txtNewRepass.TabIndex = 5;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(29, 128);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(92, 17);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "Xác nhận MK";
+            // 
+            // txtNewPass
+            // 
+            this.txtNewPass.Location = new System.Drawing.Point(142, 83);
+            this.txtNewPass.Name = "txtNewPass";
+            this.txtNewPass.Size = new System.Drawing.Size(326, 22);
+            this.txtNewPass.TabIndex = 3;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(29, 83);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(92, 17);
+            this.label9.TabIndex = 2;
+            this.label9.Text = "Mật khẩu mới";
             // 
             // txtOldPass
             // 
@@ -272,46 +315,15 @@
             this.label8.TabIndex = 0;
             this.label8.Text = "Mật khẩu cũ";
             // 
-            // label9
+            // button1
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(29, 83);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(92, 17);
-            this.label9.TabIndex = 2;
-            this.label9.Text = "Mật khẩu mới";
-            // 
-            // txtNewPass
-            // 
-            this.txtNewPass.Location = new System.Drawing.Point(142, 83);
-            this.txtNewPass.Name = "txtNewPass";
-            this.txtNewPass.Size = new System.Drawing.Size(326, 22);
-            this.txtNewPass.TabIndex = 3;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(29, 128);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(92, 17);
-            this.label10.TabIndex = 4;
-            this.label10.Text = "Xác nhận MK";
-            // 
-            // txtNewRepass
-            // 
-            this.txtNewRepass.Location = new System.Drawing.Point(142, 125);
-            this.txtNewRepass.Name = "txtNewRepass";
-            this.txtNewRepass.Size = new System.Drawing.Size(326, 22);
-            this.txtNewRepass.TabIndex = 5;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(139, 170);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(379, 17);
-            this.label12.TabIndex = 6;
-            this.label12.Text = "Nếu mật khẩu cũ không có thì để trống trường mật khẩu cũ";
+            this.button1.Location = new System.Drawing.Point(382, 211);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(86, 35);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "Xác nhận";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // ucPropertyFrm
             // 
@@ -358,5 +370,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txtNewRepass;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button button1;
     }
 }

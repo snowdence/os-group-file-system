@@ -82,12 +82,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyDetailFrm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PropertyDetailFrm.Designer.cs">
-      <DependentUpon>PropertyDetailFrm.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="MainFrm.resx">
       <DependentUpon>MainFrm.cs</DependentUpon>
     </EmbeddedResource>
@@ -104,9 +98,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="PropertyDetailFrm.resx">
-      <DependentUpon>PropertyDetailFrm.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

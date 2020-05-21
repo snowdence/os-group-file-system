@@ -212,8 +212,9 @@ namespace EMXFileManagement
         }
 
 
-        public string ShowDialog(string text, string caption)
+        public string ShowDialog(string text, string caption, bool pass_char =true)
         {
+            
             Form prompt = new Form()
             {
                 Width = 500,
@@ -224,7 +225,7 @@ namespace EMXFileManagement
             };
             Label textLabel = new Label() { Left = 50, Top = 20, Text = text };
             TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
-            textBox.UseSystemPasswordChar = true;
+            textBox.UseSystemPasswordChar = pass_char;
 
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70, DialogResult = DialogResult.OK };
             confirmation.Click += (sender, e) => { prompt.Close(); };
@@ -351,7 +352,6 @@ namespace EMXFileManagement
 
             }
 
-
             string newPass = ShowDialog("Nhập pass mới", "Mật khẩu");
             string reNewPass = ShowDialog("Nhập lại pass mới", "Mật khẩu");
             if (newPass != reNewPass)
@@ -359,11 +359,9 @@ namespace EMXFileManagement
                 MessageBox.Show("Bạn đã nhập xác nhận pass mới sai");
                 return;
             }
+            
             _current.SetPassword(disk, newPass);
             MessageBox.Show("Đặt mật khẩu thành công");
-
-
-
         }
         private void ẩnFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -672,9 +670,10 @@ namespace EMXFileManagement
         //Dang lam
         public string ShowProperty()
         {
+            DataComponent model = GetCurrentSelectedListView();
             ucPropertyFrm ucPropertyFrm = new ucPropertyFrm();
             ucPropertyFrm.Root = root;
-            ucPropertyFrm.Model = GetCurrentSelectedListView();
+            ucPropertyFrm.Model = model;
             ucPropertyFrm.LocationPath = current_location;
             ucPropertyFrm.Dock = DockStyle.Top;
             ucPropertyFrm.Init();
@@ -707,10 +706,21 @@ namespace EMXFileManagement
             }
             else if (rsltDlg == DialogResult.OK)
             {
-                bool isHidden = ucPropertyFrm.CheckHidden;
+                bool isHidden = ucPropertyFrm.CheckHidden; // true hide
                 string FileName = ucPropertyFrm.FileName;
+                var ext = Path.GetExtension(FileName);
+                var name = Path.GetFileNameWithoutExtension(FileName);
+                if (!string.IsNullOrEmpty(ext))
+                {
+                    ext = ext.Substring(1);
+                }
+                model.FileName = name;
+                model.FileExt = ext ?? "";
+                model.IsHidden = isHidden;
+
+                disk.UpdateEntry(model.GetEntry(), model.parent_cluster);
+                this.load();
                 
-                MessageBox.Show(isHidden ? "true" : "false"); 
             }
             return "";
         }
@@ -951,7 +961,7 @@ namespace EMXFileManagement
                 MessageBox.Show("Vui lòng chọn 1 thư mục từ treeview");
                 return;
             }
-            string folderName = ShowDialog("Nhập tên thư mục", "Tên thư mục");
+            string folderName = ShowDialog("Nhập tên thư mục", "Tên thư mục", false);
           
             
             fileManagement.CreateFolder((FolderModel)current_selected, folderName);
@@ -959,5 +969,68 @@ namespace EMXFileManagement
             this.load();
         }
 
+        private void hiệnFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent _current = root;
+
+            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn hiện file?", "Hiện file", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                //do something
+                _current = GetCurrentSelectedListView();
+
+                if (_current.HasPassword())
+                {
+                    string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
+                    {
+                        MessageBox.Show("Mật khẩu sai");
+                        return;
+                    }
+
+                }
+                _current.Show(disk);
+
+                MessageBox.Show("Hiện file thành công");
+                this.load();
+
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                //do something else
+            }
+        }
+
+        private void xoáPasswordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataComponent _current = root;
+
+            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá pass ?", "Xoá pass", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                //do something
+                _current = GetCurrentSelectedListView();
+
+                if (_current.HasPassword())
+                {
+                    string promptValue = ShowDialog("Nhập mật khẩu của file hoặc thư mục", "Mật khẩu");
+                    if (OOHashHelper.getString(promptValue) != _current.Password)
+                    {
+                        MessageBox.Show("Mật khẩu sai");
+                        return;
+                    }
+
+                }
+                _current.RemovePassword(disk);
+
+                MessageBox.Show("Xoá pass thành công");
+                this.load();
+
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                //do something else
+            }
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace FileManagementCore.Kernel.Structure
 {
     public class DataComponent
     {
-        
+
         public int parent_cluster = 2; //to direct to table  default is root
 
         protected byte _flag = 0x02; //0x02 is file
@@ -37,7 +37,7 @@ namespace FileManagementCore.Kernel.Structure
 
         }
         public virtual TreeNode GetRecycleBinNode()
-        {  
+        {
             if (_name == "")
             {
                 _tree_node = new TreeNode("RECYLE_BIN");
@@ -64,27 +64,28 @@ namespace FileManagementCore.Kernel.Structure
             foreach (DataComponent dataComponent in _list_component)
             {
                 //Không bật xem các file ẩn và file được ẩn
-               
+
                 if (dataComponent.IsDeleted)
-                { 
-                _tree_node.Nodes.Add(dataComponent.GetRecycleBinNode());
+                {
+                    _tree_node.Nodes.Add(dataComponent.GetRecycleBinNode());
                 }
 
             }
             return _tree_node;
         }
-        public virtual TreeNode GetTreeNode( bool show_hidden = false)
+        public virtual TreeNode GetTreeNode(bool show_hidden = false)
         {
             if (_name == "")
             {
                 _tree_node = new TreeNode("ROOT");
             }
-            else{
-                if(this is FolderModel)
+            else
+            {
+                if (this is FolderModel)
                 {
                     _tree_node = new TreeNode($"{ this.FileName }");
-                    _tree_node.ImageIndex = 0; 
-                    _tree_node.SelectedImageIndex =2 ; 
+                    _tree_node.ImageIndex = 0;
+                    _tree_node.SelectedImageIndex = 2;
 
                 }
                 else
@@ -97,19 +98,19 @@ namespace FileManagementCore.Kernel.Structure
             }
             // _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt } - {this.First_cluster} - { (this is FileModel ? "file" : "folder") }" );
             _tree_node.Tag = $"{FileName}.{FileExt}";
-            foreach(DataComponent dataComponent in _list_component)
+            foreach (DataComponent dataComponent in _list_component)
             {
                 //Không bật xem các file ẩn và file được ẩn
-                if(show_hidden == false && dataComponent.IsHidden)
+                if (show_hidden == false && dataComponent.IsHidden)
                 {
                     continue;
                 }
-              
+
                 _tree_node.Nodes.Add(dataComponent.GetTreeNode());
             }
             return _tree_node;
         }
-      
+
         public virtual void PrintPretty(string indent, bool last)
         {
             Console.Write(indent);
@@ -165,7 +166,7 @@ namespace FileManagementCore.Kernel.Structure
             {
                 _modified_date = DateTime.Now;
             }
-            _file_size = BitConverter.ToInt32( entry.FILE_SIZE,0);
+            _file_size = BitConverter.ToInt32(entry.FILE_SIZE, 0);
             _first_cluster = BitConverter.ToInt32(entry.FIRST_CLUSTER_LOW_WORD, 0);
             _password = entry.PASSWORD;
         }
@@ -233,9 +234,20 @@ namespace FileManagementCore.Kernel.Structure
             get => (this._attribute == (byte)EntryAttribute.HIDDEN);
             set
             {
-                if (value)
+                if (value == true)
                 {
-                    _flag = (byte)EntryAttribute.HIDDEN;
+                    this._attribute = (byte)EntryAttribute.HIDDEN;
+                }
+                else
+                {
+                    if (this is FolderModel)
+                    {
+                        this._attribute = (byte)EntryAttribute.SUB_DIRECTORY;
+                    }
+                    else
+                    {
+                        this._attribute = (byte)EntryAttribute.Archieve;
+                    }
                 }
             }
         }
@@ -255,7 +267,7 @@ namespace FileManagementCore.Kernel.Structure
         {
             return Password.Length > 0;
         }
-        
+
         public virtual void Hide(DiskManagement disk)
         {
             int parent_cluster = this.parent_cluster;
@@ -286,8 +298,22 @@ namespace FileManagementCore.Kernel.Structure
 
         //remove folder 
         //composite pattern
+        public virtual void RemovePassword(DiskManagement disk)
+        {
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
 
-        public virtual void SetPassword(DiskManagement disk , string pass)
+            this.Password = "";
+            SRDETEntry entry = this.GetEntry();
+            disk.UpdateEntry(entry, parent_cluster);
+        }
+
+
+        public virtual void SetPassword(DiskManagement disk, string pass)
         {
             int parent_cluster = this.parent_cluster;
             if (parent_cluster == 0)
@@ -314,7 +340,7 @@ namespace FileManagementCore.Kernel.Structure
             SRDETEntry entry = this.GetEntry();
             disk.UpdateEntry(entry, parent_cluster);
         }
-        
+
         public virtual void RemovePermanently(DiskManagement disk)
         {
             uint eof = BitConverter.ToUInt32(new byte[] { 0xFF, 0xFF, 0xFF, 0x0F }, 0);
@@ -323,13 +349,14 @@ namespace FileManagementCore.Kernel.Structure
             List<uint> clusters = new List<uint>();
             uint next_cluster = (uint)first_cluster;
 
-            do {
+            do
+            {
                 clusters.Add(next_cluster);
                 next_cluster = disk.ReadFatEntry((int)next_cluster);
             } while (next_cluster != eof);
 
             disk.WriteNULLfat(clusters);
-            
+
 
             SRDETEntry entry = this.GetEntry();
             int parent_cluster = this.parent_cluster;
@@ -356,12 +383,12 @@ namespace FileManagementCore.Kernel.Structure
             SRDETEntry entry = this.GetEntry();
             disk.UpdateEntry(entry, parent_cluster);
         }
-        
+
         public virtual DataComponent SearchComponent(string str)
         {
-            for(int i =0; i < _list_component.Count; i++)
+            for (int i = 0; i < _list_component.Count; i++)
             {
-                if(_list_component[i].ToString() == str)
+                if (_list_component[i].ToString() == str)
                 {
                     return _list_component[i];
                 }
