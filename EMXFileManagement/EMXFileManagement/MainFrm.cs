@@ -253,6 +253,7 @@ namespace EMXFileManagement
                     }
 
                 }
+
                 if (_current.IsDeleted)
                 {
                     _current.RemovePermanently(disk);
@@ -503,7 +504,6 @@ namespace EMXFileManagement
 
 
             // Add folder con and cfile1.pdf
-
             FolderModel con = fm.CreateFolder(root, "TMCon", "");
 
 
