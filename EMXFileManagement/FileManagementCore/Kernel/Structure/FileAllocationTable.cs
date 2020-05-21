@@ -90,11 +90,13 @@ namespace FileManagementCore.Kernel.Structure
         {
             this._fat.FAT_ENTRY[n] = value_cluster;
             UInt32 null_entry = BitConverter.ToUInt32(new byte[] { 0x00, 0x00, 0x00, 0x00 }, 0);
-
+            
+            /*
             if (value_cluster == null_entry)
             {
                 this._clus_available.Enqueue(n);
             }
+            */
             //Array.Copy(arr, 0, this._fat.FAT_ENTRY, n , 4);
             //Array.Copy(arr, 0, this._fat.FAT_ENTRY[n], n *4, 4);
             return 0;

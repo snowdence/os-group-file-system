@@ -323,10 +323,8 @@ namespace FileManagementCore.Kernel.Structure
                 next_cluster = disk.ReadFatEntry((int)next_cluster);
             } while (next_cluster != eof);
 
-            clusters.ForEach(delegate (uint cluster)
-            {
-                disk.WriteNULLfat((int)cluster);
-            });
+            disk.WriteNULLfat(clusters);
+            
 
             SRDETEntry entry = this.GetEntry();
             int parent_cluster = this.parent_cluster;

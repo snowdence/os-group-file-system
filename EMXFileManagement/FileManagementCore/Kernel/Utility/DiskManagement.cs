@@ -378,11 +378,14 @@ namespace FileManagementCore.Kernel.Utility
             FileIOHelper.Write(_file_stream, _fat_cache);
         }
 
-        public void WriteNULLfat(int cluster)
+        public void WriteNULLfat(List<uint> list_cluster )
         {
-            _file_stream.Seek(fat1_pos, SeekOrigin.Begin);
-            _fileAllocationTable.SetFatEntry(BitConverter.ToUInt32(new byte[4] { 0x00, 0x00, 0x00, 0x00 }, 0), cluster);
+            foreach(int item in list_cluster)
+            {
+                _fileAllocationTable.SetFatEntry(BitConverter.ToUInt32(new byte[4] { 0x00, 0x00, 0x00, 0x00 }, 0), item);
+            }
             FileIOHelper.Write(_file_stream, _fat_cache);
+
         }
         /// <summary>
         /// Đánh dấu danh sách cluster đã chiếm chỗ 
