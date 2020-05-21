@@ -70,7 +70,11 @@ namespace FileManagementCore.Kernel.Structure
                 {
                     if (_e.FLAG == 0x00)
                     {
-                        break;
+                        continue;
+                    }
+                    if (string.IsNullOrEmpty(_e.FILE_NAME) && string.IsNullOrEmpty(_e.FILE_EXT))
+                    {
+                        continue;
                     }
                     if (_e.FLAG == 0x02)
                     {
@@ -97,9 +101,9 @@ namespace FileManagementCore.Kernel.Structure
                 SRDETEntry _e = rdet_cache.entries[i];
                 if (_e.REVERSED == 0xE5)
                 { continue; }
-                if (_e.FLAG == 0x00)
+                if (string.IsNullOrEmpty(_e.FILE_NAME)  && string.IsNullOrEmpty(_e.FILE_EXT))
                 {
-                    break;
+                    continue;
                 }
                 if (_e.FLAG == 0x02)
                 {

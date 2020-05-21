@@ -26,7 +26,7 @@ namespace FileManagementCore.Kernel.Structure
         protected DateTime _created_datetime = DateTime.Now;
         protected DateTime _last_access_date = DateTime.Now;
         protected DateTime _modified_date = DateTime.Now;
-        protected int _first_cluster = 0;
+        protected int _first_cluster = 2;
         protected string _password = "";
         protected int _file_size = 0;
         SRDETEntry _entry;
@@ -333,6 +333,7 @@ namespace FileManagementCore.Kernel.Structure
                 //root
                 parent_cluster = 2;
             }
+
             disk.RemoveEntry(entry, parent_cluster);
         }
 

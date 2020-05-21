@@ -35,7 +35,7 @@ namespace EMXFileManagement
             listView1.MouseClick += listView1_MouseClick;
             listView1.MouseDown += ListView1_MouseDown;
         }
-        
+
         private void ListView1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -62,7 +62,7 @@ namespace EMXFileManagement
             fileManagement = new FileManagement(disk);
             //Tạo folder root mặc định cluster 2 
             root = new FolderModel();
-            //gán disk vào để root có thể sử dụng disk. Vì chỉ được 1 DiskManagement được truy xuất volumn nên mới cần phải gán vậy
+            //gán disk vào để root có thể sử dụng disk. Vì chỉ được 1 DiskManagement được truy xuất volumn nên mới cần ~~ph~~ải gán vậy
             root._core_disk = disk;
             //lấy cây thư mục từ root, gán vào nodes treeview. 
             load();
@@ -265,7 +265,16 @@ namespace EMXFileManagement
 
 
                 MessageBox.Show("Xoá file thành công");
-                this.load();
+
+
+                if (recycle_bin)
+                {
+                    this.recyle_bin_load();
+                }
+                else
+                {
+                    this.load();
+                }
 
             }
             else if (dialogResult == DialogResult.No)
@@ -464,6 +473,7 @@ namespace EMXFileManagement
 
         }
 
+
         private void addSampleFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!disk.IsOpened)
@@ -545,7 +555,14 @@ namespace EMXFileManagement
             fileManagement = new FileManagement(disk);
             root = new FolderModel();
             root._core_disk = disk;
-            load();
+            if (recycle_bin)
+            {
+                this.recyle_bin_load();
+            }
+            else
+            {
+                this.load();
+            }
         }
 
 
@@ -575,7 +592,13 @@ namespace EMXFileManagement
                     filePath = openFileDialog.FileName;
                     fileName = Path.GetFileNameWithoutExtension(filePath);
                     fileContent = Path.GetExtension(filePath);
-
+                    if (string.IsNullOrEmpty(fileContent)) {
+                        fileContent = "known";
+                    }
+                    else
+                    {
+                        fileContent = fileContent.Substring( 1);
+                    }
                     FileModel file = new FileModel()
                     {
                         FileName = fileName,
@@ -591,21 +614,14 @@ namespace EMXFileManagement
                     file._data = data;
 
                     fileManagement.AddNewFile((FolderModel)current_selected, file);
-                    MessageBox.Show($"Thêm file thành công{fileName}.{fileContent}");
+                   // MessageBox.Show($"Thêm file thành công{fileName}.{fileContent}");
 
                     load();
                 }
             }
 
         }
-
-
-        /// <summary>
-        /// toolstrip mở thùng rác
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void toolStripButton4_Click(object sender, EventArgs e)
+        void recyle_bin_load()
         {
             recycle_bin = true;
             Console.WriteLine("Mở thùng rác");
@@ -636,6 +652,17 @@ namespace EMXFileManagement
             treeView1.ExpandAll();
 
 
+        }
+
+
+        /// <summary>
+        /// toolstrip mở thùng rác
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            recyle_bin_load();
         }
 
         public string ShowProperty()
@@ -768,6 +795,139 @@ namespace EMXFileManagement
                 };
                 StartNode = StartNode.NextNode;
             };
+
+        }
+        void CreateSampleDisk()
+        {
+            if (disk.IsOpened)
+            {
+                disk.CloseStream();
+            }
+
+            if (System.IO.File.Exists("disk.dat"))
+            {
+                System.IO.File.Delete("disk.dat");
+            }
+
+            disk.OpenStream();
+            disk.CreateVolumn();
+            disk.CloseStream();
+
+
+        }
+        void AddSampleFileAndFolder()
+        {
+            if (!disk.IsOpened)
+            {
+                disk.OpenStream();
+                disk.ReadFatCache();
+
+            }
+
+
+
+            FileManagement fm = new FileManagement(disk);
+
+
+            FileModel rfile1 = new FileModel()
+            {
+                FileName = "rfile1",
+                FileExt = "txt",
+                Password = ""
+            };
+            List<byte> rdata1 = Enumerable.Repeat((byte)0x61, 4097).ToList();
+            rfile1._data = rdata1;
+
+
+            FileModel rfile2 = new FileModel()
+            {
+                FileName = "rfile2",
+                FileExt = "txt",
+                Password = ""
+            };
+            List<byte> rdata2 = Enumerable.Repeat((byte)0x43, 4096).ToList();
+            rfile2._data = rdata2;
+
+
+            FolderModel root = new FolderModel();
+            fm.AddNewFile(root, rfile1);
+            //fm.AddNewFile(root, rfile2);
+
+
+            // Add folder con and cfile1.pdf
+            FolderModel con = fm.CreateFolder(root, "TMCon", "");
+
+
+
+            FileModel cfile1 = new FileModel()
+            {
+                FileName = "cfile1",
+                FileExt = "pdf",
+                Password = OOHashHelper.getString("pass")
+            };
+            List<byte> cdata1 = Enumerable.Repeat((byte)0x45, 8270).ToList();
+            cfile1._data = cdata1;
+            fm.AddNewFile(con, cfile1);
+
+            FolderModel con_cua_con = fm.CreateFolder(con, "ConcuaCon", "");
+
+            FileModel cFileCon1 = new FileModel()
+            {
+                FileName = "cFileCon1",
+                FileExt = "exe",
+                Password = OOHashHelper.getString("")
+            };
+            List<byte> cdatacon1 = Enumerable.Repeat((byte)0x49, 9999).ToList();
+            cFileCon1._data = cdatacon1;
+            fm.AddNewFile(con_cua_con, cFileCon1);
+
+            root.PrintPretty(" ", true);
+        }
+        /// <summary>
+        /// Toolstrip create and add sample volumn
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            if (disk.IsOpened)
+            {
+                disk.CloseStream();
+            }
+
+            if (System.IO.File.Exists("disk.dat"))
+            {
+                System.IO.File.Delete("disk.dat");
+            }
+
+            disk.OpenStream();
+            disk.CreateVolumn();
+            disk.CloseStream();
+
+            AddSampleFileAndFolder();
+            MessageBox.Show("Đã tạo volumn mới");
+
+
+        }
+
+        private void thêmThưMụcMớiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (!disk.IsOpened)
+            {
+                disk.OpenStream();
+            }
+            disk.ReadFatCache();
+            fileManagement = new FileManagement(disk);
+            root = new FolderModel();
+            root._core_disk = disk;
+
+
+            this.load();
 
         }
     }

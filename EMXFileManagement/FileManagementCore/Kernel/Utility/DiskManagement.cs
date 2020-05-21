@@ -380,7 +380,9 @@ namespace FileManagementCore.Kernel.Utility
 
         public void WriteNULLfat(List<uint> list_cluster )
         {
-            foreach(int item in list_cluster)
+            _file_stream.Seek(fat1_pos, SeekOrigin.Begin);
+
+            foreach (int item in list_cluster)
             {
                 _fileAllocationTable.SetFatEntry(BitConverter.ToUInt32(new byte[4] { 0x00, 0x00, 0x00, 0x00 }, 0), item);
             }

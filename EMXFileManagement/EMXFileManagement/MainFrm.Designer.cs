@@ -79,6 +79,7 @@
             this.txtSearchFileName = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
             this.checkFlagHiddenShow = new System.Windows.Forms.CheckBox();
+            this.thêmThưMụcMớiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -350,9 +351,10 @@
             this.contextMenuStrip2.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.nhậpFileToolStripMenuItem,
-            this.dạngViewToolStripMenuItem1});
+            this.dạngViewToolStripMenuItem1,
+            this.thêmThưMụcMớiToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(151, 52);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(204, 76);
             // 
             // nhậpFileToolStripMenuItem
             // 
@@ -430,6 +432,7 @@
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(44, 44);
             this.toolStripButton1.Text = "Load ổ cứng";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripButton2
             // 
@@ -439,6 +442,7 @@
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(44, 44);
             this.toolStripButton2.Text = "Tạo mới ổ cứng";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripButton3
             // 
@@ -501,6 +505,13 @@
             this.checkFlagHiddenShow.TabIndex = 6;
             this.checkFlagHiddenShow.Text = "Hiện file đã ẩn";
             this.checkFlagHiddenShow.UseVisualStyleBackColor = true;
+            // 
+            // thêmThưMụcMớiToolStripMenuItem
+            // 
+            this.thêmThưMụcMớiToolStripMenuItem.Name = "thêmThưMụcMớiToolStripMenuItem";
+            this.thêmThưMụcMớiToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.thêmThưMụcMớiToolStripMenuItem.Text = "Thêm thư mục mới";
+            this.thêmThưMụcMớiToolStripMenuItem.Click += new System.EventHandler(this.thêmThưMụcMớiToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -580,6 +591,7 @@
         private System.Windows.Forms.ToolStripMenuItem largeIconToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem listToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem tileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem thêmThưMụcMớiToolStripMenuItem;
     }
 }
 
