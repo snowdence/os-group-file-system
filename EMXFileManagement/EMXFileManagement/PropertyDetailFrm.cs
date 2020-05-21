@@ -12,7 +12,7 @@ namespace EMXFileManagement
 {
     public partial class PropertyDetailFrm : Form
     {
-        
+       
         public PropertyDetailFrm()
         {
             InitializeComponent();

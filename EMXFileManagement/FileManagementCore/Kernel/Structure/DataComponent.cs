@@ -189,7 +189,12 @@ namespace FileManagementCore.Kernel.Structure
         }
         public virtual int DataSize()
         {
-            return this._file_size;
+            int size = 0;
+            foreach (DataComponent dataComponent in _list_component)
+            {
+                size += dataComponent.DataSize();
+            }
+            return size;
         }
 
         //public string Data { get => _data; set => _data = value; }

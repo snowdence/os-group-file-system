@@ -191,7 +191,7 @@ namespace EMXFileManagement
                     {
                         status += "Đã bảo mật bằng pass";
                     }
-                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.FileSize.ToString()
+                    string[] row = { item.ToString(), item.Created_datetime.ToString(), item.Modified_date.ToString(), item.DataSize().ToString()
                         ,status, item.First_cluster.ToString()
                     };
                     var listViewItem = new ListViewItem(row);
@@ -668,6 +668,8 @@ namespace EMXFileManagement
             recyle_bin_load();
         }
 
+
+        //Dang lam
         public string ShowProperty()
         {
             ucPropertyFrm ucPropertyFrm = new ucPropertyFrm();
@@ -705,7 +707,10 @@ namespace EMXFileManagement
             }
             else if (rsltDlg == DialogResult.OK)
             {
-                //MessageBox.Show(ucPropertyFrm.FileName); 
+                bool isHidden = ucPropertyFrm.CheckHidden;
+                string FileName = ucPropertyFrm.FileName;
+                
+                MessageBox.Show(isHidden ? "true" : "false"); 
             }
             return "";
         }
@@ -745,6 +750,9 @@ namespace EMXFileManagement
 
         }
 
+
+        #region SEARCH_NODE_IN_TREEVIEW_STACKOVERFLOW Source
+
         private void btnSearch_Click(object sender, EventArgs e)
         {
 
@@ -773,8 +781,6 @@ namespace EMXFileManagement
                 this.treeView1.Select();
             }
         }
-
-
         private List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
 
         private int LastNodeIndex = 0;
@@ -800,6 +806,7 @@ namespace EMXFileManagement
             };
 
         }
+        #endregion
         void CreateSampleDisk()
         {
             if (disk.IsOpened)
@@ -886,6 +893,7 @@ namespace EMXFileManagement
 
             root.PrintPretty(" ", true);
         }
+
         /// <summary>
         /// Toolstrip create and add sample volumn
         /// </summary>

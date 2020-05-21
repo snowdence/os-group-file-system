@@ -17,19 +17,28 @@ namespace EMXFileManagement.Module
         public DataComponent Model { get; set;  }
         public DataComponent Root { get; set; }
 
+
         public string LocationPath { get; set;  }
 
         public string FileName { 
-            get { return txtName.Text; }
+            get { return txtName.Text ?? "error"; }
         }
-        
+        public bool CheckHidden
+        {
+            get { return this.checkHidden.Checked; }
+        }
+  
+
+
         public ucPropertyFrm()
         {
             InitializeComponent();
         }
         public void Init()
         {
-            txtName.Text = Model.FileName + Model.FileExt;
+           
+            txtName.Text = Model.ToString();
+    
             lblType.Text = (Model is FolderModel) ? "Folder" : "File";
             lblPath.Text = LocationPath;
             lblSize.Text = Model.DataSize().ToString() + " bytes";

@@ -70,6 +70,7 @@
             this.largeIconToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.listToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.thêmThưMụcMớiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
@@ -79,7 +80,6 @@
             this.txtSearchFileName = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
             this.checkFlagHiddenShow = new System.Windows.Forms.CheckBox();
-            this.thêmThưMụcMớiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -359,7 +359,7 @@
             // nhậpFileToolStripMenuItem
             // 
             this.nhậpFileToolStripMenuItem.Name = "nhậpFileToolStripMenuItem";
-            this.nhậpFileToolStripMenuItem.Size = new System.Drawing.Size(150, 24);
+            this.nhậpFileToolStripMenuItem.Size = new System.Drawing.Size(203, 24);
             this.nhậpFileToolStripMenuItem.Text = "Nhập file";
             this.nhậpFileToolStripMenuItem.Click += new System.EventHandler(this.nhậpFileToolStripMenuItem_Click);
             // 
@@ -372,7 +372,7 @@
             this.listToolStripMenuItem1,
             this.tileToolStripMenuItem});
             this.dạngViewToolStripMenuItem1.Name = "dạngViewToolStripMenuItem1";
-            this.dạngViewToolStripMenuItem1.Size = new System.Drawing.Size(150, 24);
+            this.dạngViewToolStripMenuItem1.Size = new System.Drawing.Size(203, 24);
             this.dạngViewToolStripMenuItem1.Text = "Dạng View";
             // 
             // detailToolStripMenuItem1
@@ -409,6 +409,13 @@
             this.tileToolStripMenuItem.Size = new System.Drawing.Size(161, 26);
             this.tileToolStripMenuItem.Text = "Tile";
             this.tileToolStripMenuItem.Click += new System.EventHandler(this.titleToolStripMenuItem_Click);
+            // 
+            // thêmThưMụcMớiToolStripMenuItem
+            // 
+            this.thêmThưMụcMớiToolStripMenuItem.Name = "thêmThưMụcMớiToolStripMenuItem";
+            this.thêmThưMụcMớiToolStripMenuItem.Size = new System.Drawing.Size(203, 24);
+            this.thêmThưMụcMớiToolStripMenuItem.Text = "Thêm thư mục mới";
+            this.thêmThưMụcMớiToolStripMenuItem.Click += new System.EventHandler(this.thêmThưMụcMớiToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -481,13 +488,13 @@
             this.txtSearchFileName.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSearchFileName.Location = new System.Drawing.Point(6, 44);
             this.txtSearchFileName.Name = "txtSearchFileName";
-            this.txtSearchFileName.Size = new System.Drawing.Size(222, 45);
+            this.txtSearchFileName.Size = new System.Drawing.Size(237, 45);
             this.txtSearchFileName.TabIndex = 8;
             // 
             // btnSearch
             // 
             this.btnSearch.Image = ((System.Drawing.Image)(resources.GetObject("btnSearch.Image")));
-            this.btnSearch.Location = new System.Drawing.Point(234, 44);
+            this.btnSearch.Location = new System.Drawing.Point(249, 44);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(45, 46);
             this.btnSearch.TabIndex = 9;
@@ -505,13 +512,6 @@
             this.checkFlagHiddenShow.TabIndex = 6;
             this.checkFlagHiddenShow.Text = "Hiện file đã ẩn";
             this.checkFlagHiddenShow.UseVisualStyleBackColor = true;
-            // 
-            // thêmThưMụcMớiToolStripMenuItem
-            // 
-            this.thêmThưMụcMớiToolStripMenuItem.Name = "thêmThưMụcMớiToolStripMenuItem";
-            this.thêmThưMụcMớiToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.thêmThưMụcMớiToolStripMenuItem.Text = "Thêm thư mục mới";
-            this.thêmThưMụcMớiToolStripMenuItem.Click += new System.EventHandler(this.thêmThưMụcMớiToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
