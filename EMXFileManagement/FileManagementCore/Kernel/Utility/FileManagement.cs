@@ -56,7 +56,7 @@ namespace FileManagementCore.Kernel.Utility
         /// <param name="file">File cần thêm vào thư mục</param>
         public void AddNewFile(FolderModel parent, FileModel file)
         {
-            int file_size = (int)file.DataSize();
+            int file_size = (int)file._data.Count();
             List<int> list_wrote = _disk.WriteBlockData(file._data.ToArray(), file_size);
 
             SRDETEntry entry = file.GetEntry();

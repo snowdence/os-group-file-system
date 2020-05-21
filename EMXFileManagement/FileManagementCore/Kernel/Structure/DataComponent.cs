@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,7 +36,44 @@ namespace FileManagementCore.Kernel.Structure
         {
 
         }
-        public virtual TreeNode GetTreeNode(bool show_deleted =false, bool show_hidden = false)
+        public virtual TreeNode GetRecycleBinNode()
+        {  
+            if (_name == "")
+            {
+                _tree_node = new TreeNode("RECYLE_BIN");
+            }
+            else
+            {
+                if (this is FolderModel)
+                {
+                    _tree_node = new TreeNode($"{ this.FileName }");
+                    _tree_node.ImageIndex = 0;
+                    _tree_node.SelectedImageIndex = 2;
+
+                }
+                else
+                {
+                    _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt}");
+                    _tree_node.ImageIndex = 1;
+                    _tree_node.SelectedImageIndex = 1;
+
+                }
+            }
+            // _tree_node = new TreeNode($"{ this.FileName }.{ this.FileExt } - {this.First_cluster} - { (this is FileModel ? "file" : "folder") }" );
+            _tree_node.Tag = $"{FileName}.{FileExt}";
+            foreach (DataComponent dataComponent in _list_component)
+            {
+                //Không bật xem các file ẩn và file được ẩn
+               
+                if (dataComponent.IsDeleted)
+                { 
+                _tree_node.Nodes.Add(dataComponent.GetRecycleBinNode());
+                }
+
+            }
+            return _tree_node;
+        }
+        public virtual TreeNode GetTreeNode( bool show_hidden = false)
         {
             if (_name == "")
             {
@@ -60,11 +99,12 @@ namespace FileManagementCore.Kernel.Structure
             _tree_node.Tag = $"{FileName}.{FileExt}";
             foreach(DataComponent dataComponent in _list_component)
             {
-                if (show_deleted == false && dataComponent.IsDeleted)
+                //Không bật xem các file ẩn và file được ẩn
+                if(show_hidden == false && dataComponent.IsHidden)
                 {
                     continue;
                 }
-
+              
                 _tree_node.Nodes.Add(dataComponent.GetTreeNode());
             }
             return _tree_node;
@@ -211,9 +251,51 @@ namespace FileManagementCore.Kernel.Structure
             return Password.Length > 0;
         }
         
+        public virtual void Hide(DiskManagement disk)
+        {
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
+
+            this.Attribute = (byte)EntryAttribute.HIDDEN;
+            SRDETEntry entry = this.GetEntry();
+            disk.UpdateEntry(entry, parent_cluster);
+        }
+        public virtual void Show(DiskManagement disk)
+        {
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
+
+            this.Attribute = (byte)EntryAttribute.Archieve;
+            SRDETEntry entry = this.GetEntry();
+            disk.UpdateEntry(entry, parent_cluster);
+        }
+
 
         //remove folder 
         //composite pattern
+
+        public virtual void SetPassword(DiskManagement disk , string pass)
+        {
+            int parent_cluster = this.parent_cluster;
+            if (parent_cluster == 0)
+            {
+                //root
+                parent_cluster = 2;
+            }
+
+            this.Password = OOHashHelper.getString(pass);
+            SRDETEntry entry = this.GetEntry();
+            disk.UpdateEntry(entry, parent_cluster);
+        }
+
         public virtual void Remove(DiskManagement disk)
         {
             int parent_cluster = this.parent_cluster;
@@ -227,6 +309,7 @@ namespace FileManagementCore.Kernel.Structure
             SRDETEntry entry = this.GetEntry();
             disk.UpdateEntry(entry, parent_cluster);
         }
+        
 
 
         public virtual void Recover(DiskManagement disk)

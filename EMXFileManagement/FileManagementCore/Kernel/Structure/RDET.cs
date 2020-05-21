@@ -92,6 +92,7 @@ namespace FileManagementCore.Kernel.Structure
         {
             return this._srdet.entries[pos];
         }
+
         
     }
 }
