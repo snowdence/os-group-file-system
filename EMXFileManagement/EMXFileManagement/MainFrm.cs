@@ -51,6 +51,12 @@ namespace EMXFileManagement
 
         private void openDiskToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!File.Exists("disk.dat"))
+            {
+                MessageBox.Show("Không tìm thấy file disk.dat vui lòng tạo mới bằng icon bên cạnh hoặc icon import từ 1 file disk có sẵn");
+                return;
+            }
+
             //Nếu disk đang mở thì đóng lại trước tránh 2 class đọc 1 file sẽ crash
             if (!disk.IsOpened)
             {
@@ -208,7 +214,7 @@ namespace EMXFileManagement
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Thông tin nhóm", " - Nhóm OS bài tập 21");
+            MessageBox.Show( "  - Nhóm OS bài tập 21 FileManagement Beta 0.0.1 \n\t - Trần Minh Đức \n\t - Nguyễn Vũ Thu Hiền \n\t - Lê Thanh Phương Thái", "Thông tin nhóm");
         }
 
 
@@ -476,6 +482,12 @@ namespace EMXFileManagement
 
         private void addSampleFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!File.Exists("disk.dat"))
+            {
+                MessageBox.Show("Không tìm thấy file disk.dat vui lòng tạo mới bằng icon bên cạnh hoặc icon import từ 1 file disk có sẵn");
+                return;
+            }
+
             if (!disk.IsOpened)
             {
                 disk.OpenStream();
@@ -912,6 +924,28 @@ namespace EMXFileManagement
             root.PrintPretty(" ", true);
         }
 
+        private void CreateDefaultVolumn()
+        {
+            if (disk.IsOpened)
+            {
+                disk.CloseStream();
+            }
+
+            if (System.IO.File.Exists("disk.dat"))
+            {
+                System.IO.File.Delete("disk.dat");
+            }
+
+            disk.OpenStream();
+            disk.CreateVolumn();
+            disk.CloseStream();
+
+            AddSampleFileAndFolder();
+            MessageBox.Show("Đã tạo volumn mới");
+
+
+        }
+
         /// <summary>
         /// Toolstrip create and add sample volumn
         /// </summary>
@@ -942,8 +976,15 @@ namespace EMXFileManagement
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            if (!File.Exists("disk.dat"))
+            {
+                MessageBox.Show("Không tìm thấy file disk.dat vui lòng tạo mới bằng icon bên cạnh hoặc icon import từ 1 file disk có sẵn");
+                return;
+            }
+            
             if (!disk.IsOpened)
             {
+                
                 disk.OpenStream();
             }
             disk.ReadFatCache();
@@ -1052,7 +1093,7 @@ namespace EMXFileManagement
             {
                 disk.CloseStream();
             }
-            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá pass ?", "Xoá pass", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá ổ cứng ?", "Xoá ổ cứng disk.dat", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 File.Delete("disk.dat");
@@ -1064,10 +1105,8 @@ namespace EMXFileManagement
             }
 
         }
-
-        private void importDiskToolStripMenuItem_Click(object sender, EventArgs e)
+        void ImportDisk()
         {
-
 
             var fileContent = string.Empty;
             var filePath = string.Empty;
@@ -1110,14 +1149,15 @@ namespace EMXFileManagement
                     if (parseBootSystem.FLAG_SECURE_UNIQUE == 0x01)
                     {
 
-                        using (FileStream diskImportStream  = new FileStream(filePath, FileMode.OpenOrCreate))
+                        using (FileStream diskImportStream = new FileStream(filePath, FileMode.OpenOrCreate))
                         {
                             using (FileStream _raw_disk = new FileStream("disk.dat", FileMode.OpenOrCreate))
                             {
                                 _raw_disk.Seek(32768 * 512, SeekOrigin.Begin);
-                                
+
                                 diskImportStream.Seek(32768 * 512, SeekOrigin.Begin);
-                                XCryptHelper.CryptStream("6EAFEBFE8CA7AF7FBFF", diskImportStream, _raw_disk, false);//ma hoa
+
+                                XCryptHelper.CryptStream(XSecureCore.getUniqueID("C"), diskImportStream, _raw_disk, false);//ma hoa
                                 MessageBox.Show("Decrypt thành công");
 
                             }
@@ -1135,15 +1175,40 @@ namespace EMXFileManagement
             }
         }
 
-        private void mãHoáToolStripMenuItem_Click(object sender, EventArgs e)
+        private void importDiskToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            ImportDisk();
+        }
+
+        void MaHoa()
+        {
 
             string out_name = "out.dat";
-            
+
+            DialogResult dialogResult = MessageBox.Show("Bạn có muốn xuất Disk", "Xuất Disk", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
+
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        string path = fbd.SelectedPath;
+                        out_name = path + "\\" + out_name;
+                    }
+                }
+            }
+            else 
+            {
+                return;
+
+            }
+
             disk.OpenStream();
+
             SBootSystem ssecure = new SBootSystem();
-            
+
             ssecure.UNIQUE_ID = XSecureCore.getUniqueID("C") ?? "";
             if (string.IsNullOrEmpty(ssecure.UNIQUE_ID))
             {
@@ -1162,9 +1227,9 @@ namespace EMXFileManagement
             if (System.IO.File.Exists(out_name))
             {
                 System.IO.File.Delete(out_name);
-                File.Copy("disk.dat", out_name);
-            }
 
+            }
+            File.Copy("disk.dat", out_name);
 
             FileStream in_disk = new FileStream("disk.dat", FileMode.OpenOrCreate);
             in_disk.Seek(32768 * 512, SeekOrigin.Begin);
@@ -1173,14 +1238,46 @@ namespace EMXFileManagement
             out_disk.Seek(32768 * 512, SeekOrigin.Begin);
 
 
-            
-            
+
+
             XCryptHelper.CryptStream(ssecure.UNIQUE_ID, in_disk, out_disk, true);//ma hoa
             Console.WriteLine(ssecure.UNIQUE_ID);
 
             in_disk.Close();
             out_disk.Close();
-            MessageBox.Show("Output thành công");
+            MessageBox.Show("Output thành công file disk : out.dat");
+        }
+        private void mãHoáToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MaHoa();
+        }
+        /// <summary>
+        /// Mã hoá
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            MaHoa();
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            ImportDisk();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Bạn có muốn thoát", "Thoát", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+
+                System.Windows.Forms.Application.Exit();
+            }
+            else
+            {
+
+            }
 
         }
     }
