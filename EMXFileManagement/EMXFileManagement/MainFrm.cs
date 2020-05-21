@@ -253,7 +253,15 @@ namespace EMXFileManagement
                     }
 
                 }
-                _current.Remove(disk);
+                if (_current.IsDeleted)
+                {
+                    _current.RemovePermanently(disk);
+                }
+                else
+                {
+                    _current.Remove(disk);
+                }
+
 
                 MessageBox.Show("Xoá file thành công");
                 this.load();

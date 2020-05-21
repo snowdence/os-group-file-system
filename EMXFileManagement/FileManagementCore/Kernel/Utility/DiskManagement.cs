@@ -246,6 +246,22 @@ namespace FileManagementCore.Kernel.Utility
             _file_stream.Seek(CalcMoveOffsetClusterPointerStream(cluster), SeekOrigin.Begin);
             FileIOHelper.Write(_file_stream, _rdet_cache);
         }
+        public void RemoveEntry(SRDETEntry entry, int cluster = 2)
+        {
+            this.ReadRDETCache(cluster);
+            for (int i = 0; i < _rdet_cache.entries.Count(); i++)
+            {
+                if (_rdet_cache.entries[i].FILE_NAME == entry.FILE_NAME && _rdet_cache.entries[i].FILE_EXT == entry.FILE_EXT)
+                {
+                    _rdet_cache.entries[i] = new SRDETEntry();
+                }
+
+            }
+
+
+            _file_stream.Seek(CalcMoveOffsetClusterPointerStream(cluster), SeekOrigin.Begin);
+            FileIOHelper.Write(_file_stream, _rdet_cache);
+        }
         /// <summary>
         /// Thêm mới entry vào vị trí trống
         /// </summary>
@@ -305,7 +321,7 @@ namespace FileManagementCore.Kernel.Utility
         /// <returns>Giá trị chứa trong entry đó (uint)</returns>
         public uint ReadFatEntry(int n)
         {
-            this.ReadFatCache();// refresh fat
+//           this.ReadFatCache();// refresh fat
             return _fat_cache.FAT_ENTRY[n];
         }
 
@@ -326,6 +342,13 @@ namespace FileManagementCore.Kernel.Utility
         {
             _file_stream.Seek(fat1_pos, SeekOrigin.Begin);
             _fileAllocationTable.SetFatEntry(BitConverter.ToUInt32(new byte[4] { 0xFF, 0xFF, 0xFF, 0x0F }, 0), cluster);
+            FileIOHelper.Write(_file_stream, _fat_cache);
+        }
+
+        public void WriteNULLfat(int cluster)
+        {
+            _file_stream.Seek(fat1_pos, SeekOrigin.Begin);
+            _fileAllocationTable.SetFatEntry(BitConverter.ToUInt32(new byte[4] { 0x00, 0x00, 0x00, 0x00 }, 0), cluster);
             FileIOHelper.Write(_file_stream, _fat_cache);
         }
         /// <summary>
