@@ -58,6 +58,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.4.3.1\lib\net462\System.Runtime.dll</HintPath>
       <Private>True</Private>
@@ -75,6 +76,8 @@
     <Compile Include="Helper\DateTimeHelper.cs" />
     <Compile Include="Helper\FileIOHelper.cs" />
     <Compile Include="Helper\OOHashHelper.cs" />
+    <Compile Include="Helper\XCryptHelper.cs" />
+    <Compile Include="Helper\XSecureCore.cs" />
     <Compile Include="Kernel\Enum.cs" />
     <Compile Include="Kernel\Structure\BootSector.cs" />
     <Compile Include="Kernel\Structure\Cluster.cs" />

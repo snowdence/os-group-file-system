@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace FileManagementCore.Kernel.Utility
         int data_pos = (32768 + 8) * 512; //16781312
 
         int EOF = 268435455;
-        private FileStream _file_stream;
+        public FileStream _file_stream;
         private SFileAllocationTable _fat_cache;
         private FileAllocationTable _fileAllocationTable;
 
@@ -44,9 +45,15 @@ namespace FileManagementCore.Kernel.Utility
         /// <param name="path_disk">Tên file dữ liệu volumn</param>
         public void OpenStream(string path_disk = "disk.dat")
         {
-            _file_stream = new FileStream(path_disk, FileMode.OpenOrCreate);
-            // this.ReadFatCache();
-            this._volumn_opened = true;
+            if (_volumn_opened)
+            {
+
+            }
+            else { 
+                _file_stream = new FileStream(path_disk, FileMode.OpenOrCreate);
+                // this.ReadFatCache();
+                this._volumn_opened = true;
+            }
         }
         /// <summary>
         /// Đóng file chứa volumn, tránh việc crash 
@@ -54,9 +61,11 @@ namespace FileManagementCore.Kernel.Utility
         public void CloseStream()
         {
             //_file_stream.Dispose();
-            this._volumn_opened = false;
-
-            _file_stream.Close();
+            if (_volumn_opened)
+            {
+                _file_stream.Close();
+                this._volumn_opened = false;
+            }
         }
         public DiskManagement()
         {
@@ -71,7 +80,11 @@ namespace FileManagementCore.Kernel.Utility
             }
         }
 
-
+        public void WriteBootSystemData(SBootSystem boot_sys)
+        {
+            _file_stream.Seek(boot_system_offset, SeekOrigin.Begin);
+            FileIOHelper.Write(_file_stream, boot_sys);
+        }
         public SBootSystem GetBootSystemData()
         {
             _file_stream.Seek(boot_system_offset, SeekOrigin.Begin);

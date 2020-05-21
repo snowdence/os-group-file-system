@@ -212,9 +212,9 @@ namespace EMXFileManagement
         }
 
 
-        public string ShowDialog(string text, string caption, bool pass_char =true)
+        public string ShowDialog(string text, string caption, bool pass_char = true)
         {
-            
+
             Form prompt = new Form()
             {
                 Width = 500,
@@ -359,7 +359,7 @@ namespace EMXFileManagement
                 MessageBox.Show("Bạn đã nhập xác nhận pass mới sai");
                 return;
             }
-            
+
             _current.SetPassword(disk, newPass);
             MessageBox.Show("Đặt mật khẩu thành công");
         }
@@ -547,9 +547,17 @@ namespace EMXFileManagement
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+
             if (!disk.IsOpened)
             {
-                disk.OpenStream();
+                if (File.Exists("disk.dat"))
+                {
+                    disk.OpenStream();
+                }
+                else
+                {
+                    MessageBox.Show("Vui lòng tạo ổ cứng mẫu hoặc import từ file ổ cứng có sẵn");
+                }
             }
             disk.ReadFatCache();
             fileManagement = new FileManagement(disk);
@@ -720,7 +728,7 @@ namespace EMXFileManagement
 
                 disk.UpdateEntry(model.GetEntry(), model.parent_cluster);
                 this.load();
-                
+
             }
             return "";
         }
@@ -931,7 +939,7 @@ namespace EMXFileManagement
 
         }
 
-  
+
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             if (!disk.IsOpened)
@@ -962,8 +970,8 @@ namespace EMXFileManagement
                 return;
             }
             string folderName = ShowDialog("Nhập tên thư mục", "Tên thư mục", false);
-          
-            
+
+
             fileManagement.CreateFolder((FolderModel)current_selected, folderName);
             MessageBox.Show("Tạo folder mới thành công");
             this.load();
@@ -1031,6 +1039,149 @@ namespace EMXFileManagement
             {
                 //do something else
             }
+        }
+
+        /// <summary>
+        /// Huỷ ổ cứng, đảo trộn dữ liệu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            if (disk.IsOpened)
+            {
+                disk.CloseStream();
+            }
+            DialogResult dialogResult = MessageBox.Show("Bạn có chắc muốn xoá pass ?", "Xoá pass", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                File.Delete("disk.dat");
+                MessageBox.Show("Xoá thành công disk.dat");
+            }
+            else
+            {
+
+            }
+
+        }
+
+        private void importDiskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                //openFileDialog.InitialDirectory = "c:\\";
+                //openFileDialog.Filter = "";
+                //openFileDialog.FilterIndex = 2;
+                //openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+                    DiskManagement oDisk = new DiskManagement();
+                    oDisk.OpenStream(filePath);
+
+                    SBootSystem parseBootSystem = oDisk.GetBootSystemData();
+
+                    byte flag_secure = parseBootSystem.FLAG_SECURE_UNIQUE;
+                    string unique_key = parseBootSystem.UNIQUE_ID;
+                    string user = parseBootSystem.VOL_USER;
+                    string pass = parseBootSystem.VOL_PASS;
+                    oDisk.CloseStream();
+
+                    if (disk.IsOpened)
+                    {
+                        disk.CloseStream();
+                    }
+
+                    if (System.IO.File.Exists("disk.dat"))
+                    {
+                        System.IO.File.Delete("disk.dat");
+                    }
+
+                    File.Copy(filePath, "disk.dat");
+
+                    if (parseBootSystem.FLAG_SECURE_UNIQUE == 0x01)
+                    {
+
+                        using (FileStream diskImportStream  = new FileStream(filePath, FileMode.OpenOrCreate))
+                        {
+                            using (FileStream _raw_disk = new FileStream("disk.dat", FileMode.OpenOrCreate))
+                            {
+                                _raw_disk.Seek(32768 * 512, SeekOrigin.Begin);
+                                
+                                diskImportStream.Seek(32768 * 512, SeekOrigin.Begin);
+                                XCryptHelper.CryptStream("6EAFEBFE8CA7AF7FBFF", diskImportStream, _raw_disk, false);//ma hoa
+                                MessageBox.Show("Decrypt thành công");
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //copy là đủ rồi
+                        MessageBox.Show("Import thành công, không decrypt");
+
+                    }
+
+
+                }
+            }
+        }
+
+        private void mãHoáToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+
+            string out_name = "out.dat";
+            
+            disk.OpenStream();
+            SBootSystem ssecure = new SBootSystem();
+            
+            ssecure.UNIQUE_ID = XSecureCore.getUniqueID("C") ?? "";
+            if (string.IsNullOrEmpty(ssecure.UNIQUE_ID))
+            {
+                ssecure.FLAG_SECURE_UNIQUE = 0x00;
+            }
+            else
+            {
+                ssecure.FLAG_SECURE_UNIQUE = 0x01;
+                ssecure.VOL_USER = "admin";
+                ssecure.VOL_PASS = "admin";
+
+            }
+            disk.WriteBootSystemData(ssecure);
+            disk.CloseStream();
+
+            if (System.IO.File.Exists(out_name))
+            {
+                System.IO.File.Delete(out_name);
+                File.Copy("disk.dat", out_name);
+            }
+
+
+            FileStream in_disk = new FileStream("disk.dat", FileMode.OpenOrCreate);
+            in_disk.Seek(32768 * 512, SeekOrigin.Begin);
+
+            FileStream out_disk = new FileStream(out_name, FileMode.OpenOrCreate);
+            out_disk.Seek(32768 * 512, SeekOrigin.Begin);
+
+
+            
+            
+            XCryptHelper.CryptStream(ssecure.UNIQUE_ID, in_disk, out_disk, true);//ma hoa
+            Console.WriteLine(ssecure.UNIQUE_ID);
+
+            in_disk.Close();
+            out_disk.Close();
+            MessageBox.Show("Output thành công");
+
         }
     }
 }

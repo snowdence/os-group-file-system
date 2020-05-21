@@ -81,6 +81,8 @@
             this.btnSearch = new System.Windows.Forms.Button();
             this.checkFlagHiddenShow = new System.Windows.Forms.CheckBox();
             this.xoáPasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mãHoáToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -168,6 +170,8 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mãHoáToolStripMenuItem,
+            this.importDiskToolStripMenuItem,
             this.openDiskToolStripMenuItem,
             this.createVolumnToolStripMenuItem,
             this.addSampleFileToolStripMenuItem,
@@ -232,7 +236,7 @@
             this.thuộcTínhToolStripMenuItem,
             this.dạngViewToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(215, 266);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(174, 238);
             // 
             // ẩnFileToolStripMenuItem
             // 
@@ -462,6 +466,7 @@
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(44, 44);
             this.toolStripButton3.Text = "Xoá ổ cứng";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripButton4
             // 
@@ -523,6 +528,20 @@
             this.xoáPasswordToolStripMenuItem.Size = new System.Drawing.Size(214, 26);
             this.xoáPasswordToolStripMenuItem.Text = "Xoá Password";
             this.xoáPasswordToolStripMenuItem.Click += new System.EventHandler(this.xoáPasswordToolStripMenuItem_Click);
+            // 
+            // importDiskToolStripMenuItem
+            // 
+            this.importDiskToolStripMenuItem.Name = "importDiskToolStripMenuItem";
+            this.importDiskToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.importDiskToolStripMenuItem.Text = "Import Disk";
+            this.importDiskToolStripMenuItem.Click += new System.EventHandler(this.importDiskToolStripMenuItem_Click);
+            // 
+            // mãHoáToolStripMenuItem
+            // 
+            this.mãHoáToolStripMenuItem.Name = "mãHoáToolStripMenuItem";
+            this.mãHoáToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.mãHoáToolStripMenuItem.Text = "Mã hoá 1 máy";
+            this.mãHoáToolStripMenuItem.Click += new System.EventHandler(this.mãHoáToolStripMenuItem_Click);
             // 
             // MainFrm
             // 
@@ -604,6 +623,8 @@
         private System.Windows.Forms.ToolStripMenuItem tileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem thêmThưMụcMớiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem xoáPasswordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importDiskToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mãHoáToolStripMenuItem;
     }
 }
 
