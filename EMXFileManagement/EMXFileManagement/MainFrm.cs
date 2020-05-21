@@ -27,6 +27,8 @@ namespace EMXFileManagement
         public string current_location = "";
         public DataComponent current_selected;
         bool recycle_bin = false;
+
+
         public MainFrm()
         {
             InitializeComponent();
@@ -592,12 +594,13 @@ namespace EMXFileManagement
                     filePath = openFileDialog.FileName;
                     fileName = Path.GetFileNameWithoutExtension(filePath);
                     fileContent = Path.GetExtension(filePath);
-                    if (string.IsNullOrEmpty(fileContent)) {
+                    if (string.IsNullOrEmpty(fileContent))
+                    {
                         fileContent = "known";
                     }
                     else
                     {
-                        fileContent = fileContent.Substring( 1);
+                        fileContent = fileContent.Substring(1);
                     }
                     FileModel file = new FileModel()
                     {
@@ -614,7 +617,7 @@ namespace EMXFileManagement
                     file._data = data;
 
                     fileManagement.AddNewFile((FolderModel)current_selected, file);
-                   // MessageBox.Show($"Thêm file thành công{fileName}.{fileContent}");
+                    // MessageBox.Show($"Thêm file thành công{fileName}.{fileContent}");
 
                     load();
                 }
@@ -910,11 +913,7 @@ namespace EMXFileManagement
 
         }
 
-        private void thêmThưMụcMớiToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
+  
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             if (!disk.IsOpened)
@@ -930,5 +929,27 @@ namespace EMXFileManagement
             this.load();
 
         }
+
+        private void thêmThưMụcMớiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (recycle_bin)
+            {
+                MessageBox.Show("Không thể tạo từ thùng rác");
+                return;
+            }
+            if (current_selected != null && !(current_selected is FolderModel))
+            {
+
+                MessageBox.Show("Vui lòng chọn 1 thư mục từ treeview");
+                return;
+            }
+            string folderName = ShowDialog("Nhập tên thư mục", "Tên thư mục");
+          
+            
+            fileManagement.CreateFolder((FolderModel)current_selected, folderName);
+            MessageBox.Show("Tạo folder mới thành công");
+            this.load();
+        }
+
     }
 }
